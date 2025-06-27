@@ -1,0 +1,18 @@
+# 临时文件
+dist/
+deploy_versions/
+.temp/
+.rn_temp/
+.swc
+
+# 依赖
+node_modules/
+
+# 敏感配置
+*.local
+project.config.json
+.env*
+
+# 系统/编辑器
+.DS_Store
+.vscode/
