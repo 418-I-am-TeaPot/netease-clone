@@ -1,3 +1,3 @@
 export default definePageConfig({
-  navigationBarTitleText: "曲库",
+  navigationBarTitleText: "搜索",
 });
