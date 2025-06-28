@@ -1,0 +1,25 @@
+page {
+  background-color: #f3f7f9;
+}
+
+.container-h {
+  display: flex;
+  flex-direction: row;
+}
+
+.container-v {
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  display: flex;
+}
+
+.grow {
+  flex: 1;
+}
+
+.border {
+  border: 1px solid black;
+}
