@@ -10,7 +10,7 @@ export default defineAppConfig({
 
   window: {
     backgroundTextStyle: "light",
-    navigationBarBackgroundColor: "#fff",
+    navigationBarBackgroundColor: "#f3f7f9",
     navigationBarTitleText: "WeChat",
     navigationBarTextStyle: "black",
   },
@@ -18,7 +18,7 @@ export default defineAppConfig({
   tabBar: {
     color: "#999", // 默认文字颜色
     selectedColor: "#000", // 选中时文字颜色
-    backgroundColor: "#FFF", // 背景色
+    backgroundColor: "#f3f7f9", // 背景色
     borderStyle: "white",
     list: [
       // 导航项列表
