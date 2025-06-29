@@ -50,7 +50,7 @@ export default function SongListFav(
     }, [hasMore]);
 
     const {playlistData, setPlaylistData, currentItemIndex, setCurrentItemIndex} = usePlaylistStore();
-    const {setSong, currentSong, playing} = usePlayerStore();
+    const {setSong, currentSong, playing, setIsLike, isLike} = usePlayerStore();
 
     const handleItemClick = (song: Song) => {
         if(currentSong?.songId == song.songId) {
@@ -86,6 +86,10 @@ export default function SongListFav(
     }
 
     const handlePopupNextClick = () => {
+        console.log(playlistData);
+        console.log("currentItemIndex:" + currentItemIndex);
+        console.log("currentSong:" + (currentSong?currentSong.name:undefined));
+        console.log("playing:" + playing);
         let song: Song = popupSong;
         if(currentSong?.songId == song.songId) {
             Toast.open("歌曲已在播放");
@@ -105,10 +109,6 @@ export default function SongListFav(
         playlist.splice(currentIndex + 1, 0, song);
         setPlaylistData(playlist);
         setIsPopupVisible(false);
-        console.log(playlistData);
-        console.log("currentItemIndex:" + currentItemIndex);
-        console.log("currentSong:" + (currentSong?currentSong.name:undefined));
-        console.log("playing:" + playing);
     }
 
     const handlePopupLikeClick = () => {
@@ -117,6 +117,11 @@ export default function SongListFav(
         listChange[popupSongIndex].isLike = !listChange[popupSongIndex].isLike;
         setIsPopupVisible(false);
         setList(listChange);
+        console.log("currentSong:" + (currentSong?currentSong.name:undefined));
+        if(currentSong && popupSong.songId == currentSong?.songId) {
+            console.log("currentSongLike:" + isLike);
+            setIsLike();
+        }
     }
 
   return (
