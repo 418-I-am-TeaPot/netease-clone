@@ -63,9 +63,9 @@ export default function PlayerControls() {
   }, []);
 
   return (
-    <View className="playerControls ">
+    <View className="playerControls container-v grow">
       {/* 歌曲进度条 */}
-      <View className="songProcess ">
+      <View className="songProcess">
         <Slider
           max={100}
           min={0}

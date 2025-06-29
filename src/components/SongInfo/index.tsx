@@ -13,7 +13,7 @@ export default function SongInfo() {
   };
 
   return (
-    <View className="songInfo container-v">
+    <View className="songInfo container-v grow">
       {/* 封面信息 */}
       <View
         style={{ justifyContent: "center", height: "80%" }}
