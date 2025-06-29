@@ -1,0 +1,43 @@
+.lyrics-view {
+  background-color: #305d68;
+  position: relative;
+}
+
+.lyric-line {
+  padding: 16px 105px;
+  margin: 0 20px;
+  border-radius: 24px;
+}
+
+.lyric-line-active {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.lyric-text {
+  font-size: larger;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.lyric-text-centered {
+  font-size: larger;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.lyric-text-active {
+  font-size: larger;
+  font-weight: 500;
+  color: white;
+}
+
+.center-indicator {
+  align-items: center;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  padding-left: 45px;
+  padding-right: 60px;
+  gap: 32px;
+}
