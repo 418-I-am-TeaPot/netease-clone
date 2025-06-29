@@ -5,6 +5,9 @@ import { useSearch } from "../search/useSearch";
 import { useState, useRef } from "react";
 import "./index.scss";
 import SongListVertical from "@/components/SongLIstVertical";
+import NCMiniPlayer from "@/components/NCMiniPlayer";
+import NCPlaylist from "@/components/NCPlaylist";
+import { usePlaylistStore } from "@/store/playlist";
 
 export default function SearchResult() {
   const [items, setItems] = useState<{id:string, artist:string, title: string, imgUrl: string}[]>([]);
@@ -19,47 +22,27 @@ export default function SearchResult() {
     Taro.setNavigationBarTitle({ title: options.q });
     setSearchKey(options.q);
     setTextInput(options.q);
-    const newItem = [
-    {
-      imgUrl: "https://p1.music.126.net/FcsrgetFoSqZmxRjkBh6BA==/109951169522292175.jpg?param=200y200",
-      title: "Viyella's Memory",
-      artist: "123",
-      id: "123456"
-    },
-    {
-      imgUrl: "../../assets/icons/tab/vault.png",
-      title: "87654321",
-      artist: "321",
-      id: "1234567"
-    },
-    {
-      imgUrl: "../../assets/icons/tab/vault.png",
-      title: "87654321",
-      artist: "321",
-      id: "1234567"
-    },
-    {
-      imgUrl: "../../assets/icons/tab/vault.png",
-      title: "87654321",
-      artist: "321",
-      id: "1234567"
-    },
-    {
-      imgUrl: "../../assets/icons/tab/vault.png",
-      title: "87654321",
-      artist: "321",
-      id: "1234567"
-    },
-    {
-      imgUrl: "https://p1.music.126.net/FcsrgetFoSqZmxRjkBh6BA==/109951169522292175.jpg?param=200y200",
-      title: "87654321",
-      artist: "321",
-      id: "1234567"
+    const loadSongs = () => { 
+      Taro.request({
+        url: 'http://localhost:8080/songs/search?q=' + options.q,
+        method: 'GET', 
+        success: (res) => {
+          console.log('Data:', res.data);
+          setItems(res.data.data);
+          setResultNum(res.data.data.length);
+          setLoading(true);
+        },
+        fail: (err) => {
+          console.error('Request failed:', err);
+          Taro.showToast({
+            title: '加载歌曲失败，请稍后重试',
+            icon: 'none',
+            duration: 2000,
+          });
+        }
+      });
     }
-    ]
-    setItems(newItem)
-    setResultNum(newItem.length);
-    setLoading(true);
+    loadSongs();
   });
 
   const [showOverlay, setShowOverlay] = useState(false);
@@ -91,6 +74,8 @@ export default function SearchResult() {
       searchRef.current.clear();
     }
   }
+
+  const { playlistOpen, togglePlaylist } = usePlaylistStore();
     
   return (
     <View>
@@ -120,9 +105,11 @@ export default function SearchResult() {
           <SongListVertical
             items={items}
             search={searchKey}
-            loadingMore={false}
           />
       </View>}
+      <NCMiniPlayer />
+      <NCPlaylist open={playlistOpen} onClose={togglePlaylist} />
     </View>
+    
   );
 }

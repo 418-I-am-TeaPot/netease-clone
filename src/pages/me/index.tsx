@@ -5,7 +5,9 @@ import { Flex,Image,List,Cell,Loading,Sticky } from "@taroify/core";
 import NCMiniPlayer from "@/components/NCMiniPlayer";
 import { usePlaylistStore } from "@/store/playlist";
 import NCPlaylist from "@/components/NCPlaylist";
+import SongListFav from "@/components/SongLIstFav";
 import { useState } from "react";
+import { Song } from "@/models/song";
 
 export default function Me() {
   useLoad(() => {
@@ -18,10 +20,31 @@ export default function Me() {
     Taro.navigateTo({ url: "/pages/profile/index" });
   };
 
-
-  const [hasMore, setHasMore] = useState(true)
-  const [list, setList] = useState<string[]>([])
-  const [loading, setLoading] = useState(false)
+    const [songs, setSongs] = useState<Song[]>([])
+    const [loading, setLoading] = useState<boolean>(false)
+  
+    useLoad(() => {
+      console.log("Page loaded.");
+      const loadSongs = () => { Taro.request({
+          url: 'http://localhost:8080/songs',
+          method: 'GET', 
+          success: (res) => {
+            console.log('Data:', res.data);
+            setSongs(res.data.data);
+            setLoading(true);
+          },
+          fail: (err) => {
+            console.error('Request failed:', err);
+            Taro.showToast({
+              title: '加载歌曲失败，请稍后重试',
+              icon: 'none',
+              duration: 2000,
+            });
+          }
+        });
+      }
+      loadSongs();
+    });
   
   return (
     <View className="me">
@@ -45,37 +68,16 @@ export default function Me() {
 
 
       <Sticky>
-        <Cell>内容</Cell>
+        <Cell>我喜欢的</Cell>
       </Sticky>
-
-      <List
-      loading={loading}
-      hasMore={hasMore}
-      onLoad={() => {
-        setLoading(true)
-        setTimeout(() => {
-          for (let i = 0; i < 20; i++) {
-            const text = list.length + 1
-            list.push(text < 20 ? "0" + text : String(text))
-          }
-          setList([...list])
-          setHasMore(list.length < 40)
-          setLoading(false)
-        }, 100)
-      }}
-    >
-      {
-        //
-        list.map((item) => (
-          <Cell key={item}>{item}</Cell>
-        ))
-      }
-      <List.Placeholder>
-        {loading && <Loading>加载中...</Loading>}
-        {!hasMore && "没有更多了"}
-      </List.Placeholder>
-    </List>
       
+      <View>
+        <SongListFav
+          items={songs}
+          search={""}
+          loadStart={loading}
+        />
+      </View>
 
       <NCMiniPlayer />
       <NCPlaylist open={playlistOpen} onClose={togglePlaylist} />
