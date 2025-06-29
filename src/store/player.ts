@@ -22,7 +22,7 @@ interface PlayerState {
   pause: () => void;
   resume: () => void;
   player: InnerAudioContext | null;
-  isLike: Boolean;
+  isLike: boolean;
   setIsLike: () => void;
 }
 
