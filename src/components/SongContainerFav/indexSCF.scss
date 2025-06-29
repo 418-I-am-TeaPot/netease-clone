@@ -1,0 +1,51 @@
+.containerSCF {
+  width: 100%;
+  height: 140px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: inherit;
+  margin-bottom: 10px;
+}
+.coverSCF {
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  object-fit: cover;
+  object-position: center;
+  margin-right: 30px;
+}
+.textContainerSCF {
+  flex: 1;
+  overflow: hidden;
+  width: 80%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.titleSCF {
+  width: 100%;
+  height: 40px;
+  margin-top: 25px;
+  font-size: 30px;
+  font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.artistSCF {
+  width: 100%;
+  height: 50px;
+  margin-top: 20px;
+  font-size: 24px;
+  color: #888;
+  text-overflow: ellipsis;
+}
+.iconControllerSCF {
+  width: 60px;
+  height: 60px;
+}
+
+.playIconSCF {
+  height: 60px;
+  width: 60px;
+}
