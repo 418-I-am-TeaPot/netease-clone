@@ -47,7 +47,7 @@
     "@tarojs/plugin-platform-qq": "4.1.2",
     "@tarojs/plugin-platform-swan": "4.1.2",
     "@tarojs/plugin-platform-tt": "4.1.2",
-    "@tarojs/plugin-platform-weapp": "4.1.2",
+    "@tarojs/plugin-platform-weapp": "^4.1.2",
     "@tarojs/react": "4.1.2",
     "@tarojs/runtime": "4.1.2",
     "@tarojs/shared": "4.1.2",
