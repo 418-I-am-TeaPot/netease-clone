@@ -8,57 +8,42 @@ import NCPlaylist from "@/components/NCPlaylist";
 import { usePlaylistStore } from "@/store/playlist";
 import SongListVertical from "@/components/SongLIstVertical";
 import SongListHorizental from "@/components/SongLIstHorizental";
-import { useState, useRef } from "react";
-import { useSearch } from "../search/useSearch"; 
+import { useState, useRef, useEffect } from "react";
+import { useSearch } from "../search/useSearch";
+import { Song } from "@/models/song";
+import axios from "axios"; 
 import { title } from "process";
 
 export default function Index() {
+  const [songs, setSongs] = useState<Song[]>([])
+  const [loading, setLoading] = useState<boolean>(false)
+
   useLoad(() => {
     console.log("Page loaded.");
+    const loadSongs = () => { Taro.request({
+        url: 'http://localhost:8080/songs',
+        method: 'GET', 
+        success: (res) => {
+          console.log('Data:', res.data);
+          setSongs(res.data.data);
+          setLoading(true);
+        },
+        fail: (err) => {
+          console.error('Request failed:', err);
+          Taro.showToast({
+            title: '加载歌曲失败，请稍后重试',
+            icon: 'none',
+            duration: 2000,
+          });
+        }
+      });
+    }
+    loadSongs();
   });
 
   const searchRef = useRef<any>(null);
 
   const { playlistOpen, togglePlaylist } = usePlaylistStore();
-
-  const items = [
-    {
-      imgUrl: "https://p1.music.126.net/FcsrgetFoSqZmxRjkBh6BA==/109951169522292175.jpg?param=200y200",
-      title: "Viyella's Memory",
-      artist: "123",
-      id: "123456"
-    },
-    {
-      imgUrl: "../../assets/icons/tab/vault.png",
-      title: "87654321",
-      artist: "321",
-      id: "1234567"
-    },
-    {
-      imgUrl: "../../assets/icons/tab/vault.png",
-      title: "87654321",
-      artist: "321",
-      id: "1234567"
-    },
-    {
-      imgUrl: "../../assets/icons/tab/vault.png",
-      title: "87654321",
-      artist: "321",
-      id: "1234567"
-    },
-    {
-      imgUrl: "../../assets/icons/tab/vault.png",
-      title: "87654321",
-      artist: "321",
-      id: "1234567"
-    },
-    {
-      imgUrl: "https://p1.music.126.net/FcsrgetFoSqZmxRjkBh6BA==/109951169522292175.jpg?param=200y200",
-      title: "87654321",
-      artist: "321",
-      id: "1234567"
-    }
-  ]
 
   const [showOverlay, setShowOverlay] = useState(false);
 
@@ -114,7 +99,8 @@ export default function Index() {
       
       <View>
         <SongListHorizental
-          items={items}
+          items={songs.slice(0, 10)}
+          loadStart={loading}
         />
       </View>
 
@@ -126,8 +112,9 @@ export default function Index() {
         width: 90%;
         margin-left: 5%;">
         <SongListVertical
-          items={items}
+          items={songs}
           search={""}
+          loadStart={loading}
         />
       </View>
       <NCMiniPlayer />
