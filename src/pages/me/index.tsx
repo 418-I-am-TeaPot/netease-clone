@@ -19,9 +19,23 @@ export default function Me() {
 
   return (
     <View className="me">
-      <Avatar onClick={editProfile}>P</Avatar>
+      <Flex justify="center">  
+      <Flex.Item span={6}></Flex.Item>
+      <Flex.Item span={6}>
+        <Image shape="circle" width={200} height={200} src="https://img.yzcdn.cn/vant/cat.jpeg" onClick={editProfile}/>
+      </Flex.Item>
+      <Flex.Item span={6}></Flex.Item>
+    </Flex>
+    
+    <Flex justify="center">
+  <Flex.Item span={6}></Flex.Item>
+  <Flex.Item span={6}>username</Flex.Item>
+  <Flex.Item span={6}></Flex.Item>
+</Flex>
+      
       <NCMiniPlayer />
       <NCPlaylist open={playlistOpen} onClose={togglePlaylist} />
     </View>
   );
+
 }
