@@ -7,7 +7,8 @@ import SongContainerVertical from "../SongContainerVertical";
 export default function SongListVertical(
     {
         items,
-        search
+        search,
+        loadingMore = true
     }
 ) {
     const [hasMore, setHasMore] = useState(true)
@@ -20,7 +21,7 @@ export default function SongListVertical(
         if (!hasMore) {
             const timer = setTimeout(() => {
                 setShowLoading(false);
-            }, 2000);
+            }, 1000);
             return () => clearTimeout(timer); // 清除定时器
         }
     }, [hasMore]);
@@ -28,18 +29,16 @@ export default function SongListVertical(
   return (
     <View style="
             width: 100%;
-            height: 100vh;
             display: flex;
             flex-direction: column;
             background-color: #f3f7f9;">
         <List style="
             width: 100%;
-            flex: 1;
-            min-height: 0;
-            background-color: inherit;"
-            loading={loading}
-            hasMore={hasMore}
+            flex: 1;"
+            loading={loading && loadingMore}
+            hasMore={hasMore && loadingMore}
             onLoad={() => {
+                if(!loadingMore) return;
                 setLoading(true)
                 setTimeout(() => {
                 for (let i = 0; i < 10; i++) {
@@ -47,7 +46,7 @@ export default function SongListVertical(
                         imgUrl: "../../assets/icons/tab/vault.png",
                         title: "12345678",
                         artist: "123",
-                        id: 123456
+                        id: "123456"
                     })
                 }
                 setList([...list])
@@ -62,7 +61,6 @@ export default function SongListVertical(
                         imgUrl={item.imgUrl}
                         title={item.title}
                         artist={item.artist}
-                        key={item.id || index}
                     />
                 ))
             }
@@ -73,7 +71,7 @@ export default function SongListVertical(
             {/* 为音乐播放器留的空间 */}
             <List.Placeholder style="
                 width: 100%;
-                height: 56px;">
+                height: 20px;">
             </List.Placeholder>
         </List>
     </View>
