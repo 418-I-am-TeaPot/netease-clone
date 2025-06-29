@@ -3,5 +3,5 @@ export interface Song {
   name: string;
   artists: string;
   coverUrl: string;
-  isLike: string;
+  isLike: boolean;
 }
