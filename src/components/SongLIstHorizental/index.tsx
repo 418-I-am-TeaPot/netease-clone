@@ -18,7 +18,6 @@ export default function SongListHorizental(
                     <SongContainerHorizental
                         imgUrl={item.imgUrl}
                         title={item.title}
-                        key={item.id || index}
                      />
                 ))
             }
