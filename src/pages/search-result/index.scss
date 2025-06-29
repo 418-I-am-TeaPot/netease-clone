@@ -1,0 +1,30 @@
+.searchSR {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    z-index: 100;
+    --search-background-color: #f3f7f9;
+    flex-shrink: 0;
+}
+
+.overlaySR {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 99; // 低于搜索框但高于其它内容
+}
+
+.resultNum {
+    width: 100%;
+    height: 60px;
+    font: bold;
+    font-size: 40px;
+    padding-top: 100px;
+    padding-left: 5%;
+    margin-bottom: 20px;
+}
