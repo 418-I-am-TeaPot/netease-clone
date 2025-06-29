@@ -7,6 +7,8 @@ import { Song } from "@/models/song";
 import { Popup } from "@taroify/core";
 import { Play, Like } from "@taroify/icons"
 import { usePlayerStore } from "@/store/player";
+import { usePlaylistStore } from "@/store/playlist";
+import { Toast } from "@taroify/core"
 
 export default function SongListFav(
     {
@@ -47,9 +49,35 @@ export default function SongListFav(
         }
     }, [hasMore]);
 
+    const {playlistData, setPlaylistData, currentItemIndex, setCurrentItemIndex} = usePlaylistStore();
+    const {setSong, currentSong, playing} = usePlayerStore();
+
     const handleItemClick = (song: Song) => {
-        console.log(song.songId);
+        if(currentSong?.songId == song.songId) {
+            Toast.open("歌曲已在播放");
+            return;
+        }
+        let playlist: Song[] = playlistData;
+        console.log(playlistData);
+        console.log("currentItemIndex:" + currentItemIndex);
+        console.log("currentSong:" + (currentSong?currentSong.name:undefined));
+        console.log("playing:" + playing);
+        let flag = false;
+        for (let i = 0; i < playlistData.length; i++) {
+            if (playlistData[i].songId == song.songId) {
+                setCurrentItemIndex(i);
+                flag = true;
+                break;
+            }
+        }
+        if(!flag) {
+            playlist.splice(currentItemIndex + 1, 0, song);
+            setCurrentItemIndex(currentItemIndex + 1);
+        }
+        setPlaylistData(playlist);
+        setSong(song);
     }
+
     const handleItemIconClick = (song: Song, index: number, event: React.MouseEvent) => {
         event.stopPropagation();
         setPopupSong(song);
@@ -58,8 +86,29 @@ export default function SongListFav(
     }
 
     const handlePopupNextClick = () => {
-        console.log("next" + popupSong.songId);
+        let song: Song = popupSong;
+        if(currentSong?.songId == song.songId) {
+            Toast.open("歌曲已在播放");
+            return;
+        }
+        let playlist: Song[] = playlistData;
+        let currentIndex = currentItemIndex;
+        for (let i = 0; i < playlistData.length; i++) {
+            if (playlistData[i].songId == song.songId) {
+                if (i < currentItemIndex) {
+                    currentIndex -= 1;
+                    setCurrentItemIndex(currentIndex);
+                }
+                playlist.splice(i, 1);
+            }
+        }
+        playlist.splice(currentIndex + 1, 0, song);
+        setPlaylistData(playlist);
         setIsPopupVisible(false);
+        console.log(playlistData);
+        console.log("currentItemIndex:" + currentItemIndex);
+        console.log("currentSong:" + (currentSong?currentSong.name:undefined));
+        console.log("playing:" + playing);
     }
 
     const handlePopupLikeClick = () => {
