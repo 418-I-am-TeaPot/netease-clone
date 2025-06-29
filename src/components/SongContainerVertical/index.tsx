@@ -1,6 +1,5 @@
 import { View, Text, Image } from "@tarojs/components";
 import "./indexSCV.scss";
-import Taro from "@tarojs/taro";
 import { Play } from "@taroify/icons"
 
 export default function SongContainerVertical(
