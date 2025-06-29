@@ -39,7 +39,7 @@ export default function Me() {
         <View style={{ height: '20px' }} />
 
         <View style={{ textAlign: 'center' }}  className="taroify-ellipsis">
-          usernameusernameusernameuserna
+          username
         </View>
         <View style={{ height: '50px' }} />
 
