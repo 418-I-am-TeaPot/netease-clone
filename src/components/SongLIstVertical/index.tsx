@@ -8,25 +8,34 @@ import { usePlayerStore } from "@/store/player";
 import { usePlaylistStore } from "@/store/playlist";
 import { Toast } from "@taroify/core";
 import Taro from "@tarojs/taro";
+import { BASE_URL } from "@/service/config";
 
 export default function SongListVertical(
     {
         user,
-        search
+        search,
+        useSearch = false
     }
 ) {
-    const [items, setItems] = useState<Song[]>([])
-
-    console.log(search);
-    console.log(search == "" || search == undefined);
-
     let url: String;
-    if(search == "" || search == undefined) {
-        url = 'http://localhost:8080/songs';
+    let searchkey = search;
+    
+    if(useSearch && (!searchkey || searchkey == undefined))
+    return (
+        <View style="
+            width: 100%;
+            margin-top: 40px;
+            text-align: center;
+            font-size: 30px;
+            color: #444444;">
+            {"暂无数据"}
+        </View>);
+    const [items, setItems] = useState<Song[]>([]);
+    if(!useSearch) {
+        url = BASE_URL + '/songs';
     } else {
-        url = 'http://localhost:8080/songs/search?q=' + search;
+        url = BASE_URL + '/songs/search?q=' + searchkey;
     }
-    console.log(url);
 
     const requestWithLoading = async (url) => {
             try {
@@ -34,16 +43,29 @@ export default function SongListVertical(
                 title: '加载中', 
                 mask: true  // 添加遮罩防止触摸穿透
                 });
-        
                 const response = await Taro.request({
                     url: url,
-                    method: 'GET', 
+                    method: 'GET',
+                    header: {
+                        'content-type': 'application/json',
+                        'Accept': 'application/json',
+                        'openid': user.openid
+                    },
                     success: (res) => {
-                        console.log('Data:', res.data);
+                        if(useSearch)console.log(res.data);
                         setItems(res.data.data);
+                        if(res.data.data != undefined) {
+                            let initItems: Song[];
+                            if(res.data.data.length < 10)
+                                initItems = res.data.data;
+                            else
+                                initItems = res.data.data.slice(0, 10);
+                            setList(initItems);
+                        } else
+                            setList([]);
                     },
                     fail: (err) => {
-                        console.error('Request failed:', err);
+                        if(useSearch)console.log(err);
                         Taro.showToast({
                             title: '加载歌曲失败，请稍后重试',
                             icon: 'none',
@@ -53,16 +75,21 @@ export default function SongListVertical(
                 });
                 return response;
             } catch (error) {
-                console.error('Request error:', error);
                 throw error;
             } finally {
                 Taro.hideLoading();
             }
         };
-
+    if(useSearch) {
+        console.log(searchkey);
+    }
     useEffect(()=> {
-        requestWithLoading(url);},[search]);
-    
+            if(useSearch) {
+        console.log(searchkey);
+    }
+        requestWithLoading(url);
+    },[search]);
+
     const [hasMore, setHasMore] = useState(true);
     let initItems: Song[];
     if(items.length < 10)
@@ -92,10 +119,6 @@ export default function SongListVertical(
             return;
         }
         let playlist: Song[] = playlistData;
-        console.log(playlistData);
-        console.log("currentItemIndex:" + currentItemIndex);
-        console.log("currentSong:" + (currentSong?currentSong.name:undefined));
-        console.log("playing:" + playing);
         let flag = false;
         for (let i = 0; i < playlistData.length; i++) {
             if (playlistData[i].songId == song.songId) {
@@ -111,6 +134,17 @@ export default function SongListVertical(
         setPlaylistData(playlist);
         setSong(song);
     }
+
+    if(!items || items == undefined || items.length == 0)
+    return (
+        <View style="
+            width: 100%;
+            margin-top: 40px;
+            text-align: center;
+            font-size: 30px;
+            color: #444444;">
+            {"暂无数据"}
+        </View>);
 
   return (
     <View style="
