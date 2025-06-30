@@ -6,23 +6,34 @@ import { usePlayerStore } from "@/store/player";
 import "./index.scss";
 
 import { useEffect, useState } from "react";
+import { usePlaylistStore } from "@/store/playlist";
 export default function PlayerControls() {
-  const { playing, togglePlay, player } = usePlayerStore();
-  const [currentTime, setCurrentTime] = useState(0);
+  const { playing, player, setSong, currentTime, currentSong, resume, pause } =
+    usePlayerStore();
+  const { currentItemIndex, playlistData, setCurrentItemIndex } =
+    usePlaylistStore();
+
   const [sliderValue, setSiderValue] = useState(0);
 
-  player?.onTimeUpdate(() => {
-    setCurrentTime(player.currentTime);
-    setSiderValue(player ? (100 * player.currentTime) / player.duration : 0);
-  });
-
   const handleStartClick = () => {
-    playing ? player?.pause() : player?.play();
-    togglePlay();
+    playing ? pause() : resume();
   };
 
-  const handlePreSong = () => {};
-  const handleNextSong = () => {};
+  const handlePreSong = () => {
+    if (currentItemIndex == 0) {
+      setSong(playlistData[playlistData.length - 1]);
+      setCurrentItemIndex(playlistData.length - 1);
+    } else {
+      setSong(playlistData[currentItemIndex - 1]);
+      setCurrentItemIndex[currentItemIndex - 1];
+    }
+    setSiderValue(0);
+  };
+  const handleNextSong = () => {
+    setSong(playlistData[(currentItemIndex + 1) % playlistData.length]);
+    setCurrentItemIndex((currentItemIndex + 1) % playlistData.length);
+    setSiderValue(0);
+  };
 
   const CurrentTime = () => {
     if (!player?.currentTime) return <></>;
@@ -41,7 +52,7 @@ export default function PlayerControls() {
     );
   };
   const DurationTime = () => {
-    if (!player?.duration) return <></>;
+    if (!player?.currentTime) return <></>;
     const durationSecond = Math.floor(player.duration % 60)
       .toString()
       .padStart(2, "0");
@@ -58,10 +69,13 @@ export default function PlayerControls() {
   };
 
   useEffect(() => {
-    if (!player) return;
-    player.src = "http://music.163.com/song/media/outer/url?id=317151.mp3";
-  }, []);
+    if (!player?.duration) return;
+    setSiderValue((100 * currentTime) / player.duration);
+  }, [currentTime]);
 
+  useEffect(() => {
+    resume();
+  }, [currentSong]);
   return (
     <View className="playerControls container-v grow">
       {/* 歌曲进度条 */}
