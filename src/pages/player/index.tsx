@@ -13,18 +13,22 @@ export default function Player() {
 
   const [showLyrics, setShowLyrics] = useState(false);
 
+  const showLyricsCallback = () => {
+    setShowLyrics((prev) => !prev);
+  };
+
   return (
     <View
       className="player container-v grow"
       style={{ height: "100vh" }}
       disableScroll
     >
-      <View
-        onClick={() => setShowLyrics((prev) => !prev)}
-        className="container"
-        style={{ height: "70%" }}
-      >
-        {showLyrics ? <NCLyricsView /> : <SongInfo />}
+      <View className="container" style={{ height: "70%" }}>
+        {showLyrics ? (
+          <NCLyricsView showLyricsCb={showLyricsCallback} />
+        ) : (
+          <SongInfo showLyricsCb={showLyricsCallback} />
+        )}
       </View>
       <View className="container" style={{ height: "20%" }}>
         <PlayerControls />
