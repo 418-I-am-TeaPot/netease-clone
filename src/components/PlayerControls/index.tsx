@@ -32,15 +32,17 @@ export default function PlayerControls() {
       setSong(playlistData[playlistData.length - 1]);
       setCurrentItemIndex(playlistData.length - 1);
     } else {
-      setSong(playlistData[currentItemIndex - 1]);
-      setCurrentItemIndex[currentItemIndex - 1];
+      const index = currentItemIndex;
+      setSong(playlistData[index - 1]);
+      setCurrentItemIndex(index - 1);
     }
     setSiderValue(0);
     resume();
   };
   const handleNextSong = () => {
-    setSong(playlistData[(currentItemIndex + 1) % playlistData.length]);
-    setCurrentItemIndex((currentItemIndex + 1) % playlistData.length);
+    const index = currentItemIndex;
+    setSong(playlistData[(index + 1) % playlistData.length]);
+    setCurrentItemIndex((index + 1) % playlistData.length);
     setSiderValue(0);
     resume();
   };
