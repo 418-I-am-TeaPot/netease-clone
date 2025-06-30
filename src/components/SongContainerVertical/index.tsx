@@ -1,12 +1,13 @@
 import { View, Text, Image } from "@tarojs/components";
 import "./indexSCV.scss";
-import { Play } from "@taroify/icons"
+import { Play, Like } from "@taroify/icons"
 
 export default function SongContainerVertical(
     {
         imgUrl,
         title,
         artist,
+        isLike,
         onClick
     }
 ) {
@@ -17,7 +18,9 @@ export default function SongContainerVertical(
       <Image className="coverSCV" src={ imgUrl }> </Image>
       <View className="textContainerSCV">
         <Text className="titleSCV">{title}</Text>
-        <Text className="artistSCV">{artist}</Text>
+        <View className="artistSCV">
+          {artist}
+        </View>
       </View>
       <Play className="playIconSCV" size="25px"/>
     </View>
