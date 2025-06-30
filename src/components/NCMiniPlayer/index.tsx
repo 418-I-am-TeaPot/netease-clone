@@ -2,40 +2,56 @@
 import { View, Text } from "@tarojs/components";
 import "./index.scss";
 import Taro from "@tarojs/taro";
-import { Image } from "@taroify/core";
+import { Image, NoticeBar } from "@taroify/core";
 import pauseIcon from "@/assets/icons/player/pause-sm.png";
 import playIcon from "@/assets/icons/player/play-sm.png";
 import playlistIcon from "@/assets/icons/player/playlist-sm.png";
 import cover from "@/assets/images/cover.png";
 import { usePlayerStore } from "@/store/player";
 import { usePlaylistStore } from "@/store/playlist";
+import { useEffect, useState } from "react";
 
 export default function NCMiniPlayer() {
-  const { togglePlay, playing } = usePlayerStore();
+  const { togglePlay, playing, player, currentSong } = usePlayerStore();
   const { togglePlaylist } = usePlaylistStore();
 
   const openPlayer = () => {
     Taro.navigateTo({ url: "/pages/player/index" });
   };
 
+  const handlePlayAndPause = () => {
+    playing ? player?.pause() : player?.play();
+    togglePlay();
+  };
+
   return (
     <View className="mini-player container-h">
       <View className="container cover-container" onClick={openPlayer}>
-        <Image className="cover" height={60} width={60} src={cover} />
+        <Image
+          className="cover"
+          height={60}
+          width={60}
+          src={currentSong?.coverUrl}
+        />
       </View>
-      <View
-        className="grow song-title-container container-h"
+      <NoticeBar
+        speed={40}
         onClick={openPlayer}
+        className="container-h grow"
+        style={{ backgroundColor: "rgba(250, 252, 255, 0.8)" }}
+        scrollable
       >
-        <Text className="song-title">Song title</Text>
-        <Text className="singer">{` - ${"singer"}`}</Text>
-      </View>
+        <View className="line-wrapper">
+          <Text className="song-title">{currentSong?.name}</Text>
+          <Text className="singer">{` - ${currentSong?.artists}`}</Text>
+        </View>
+      </NoticeBar>
       <View className="icon-container container">
         <Image
           height={52}
           width={52}
           src={playing ? pauseIcon : playIcon}
-          onClick={togglePlay}
+          onClick={handlePlayAndPause}
         />
         <Image
           height={52}

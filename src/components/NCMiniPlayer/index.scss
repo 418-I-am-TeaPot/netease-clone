@@ -8,24 +8,31 @@
   background: white;
   z-index: 1;
   border-radius: 50px;
-  gap: 20px;
+  gap: 0;
   background-color: rgba(250, 252, 255, 0.8); // 半透明背景
   backdrop-filter: blur(10px); // 毛玻璃核心
 }
 
-.song-title-container {
-  align-items: center;
+.line-wrapper {
+  display: flex;
+  flex-direction: row;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   gap: 16px;
+  align-items: center;
 }
 
 .song-title {
+  color: #000;
+  display: inline;
+  white-space: nowrap;
   font-weight: 500;
   font-size: 32px;
 }
 
 .singer {
-  font-weight: 400;
-  font-size: 32px;
+  font-size: 28px;
   color: #999;
 }
 
