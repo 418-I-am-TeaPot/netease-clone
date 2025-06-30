@@ -1,12 +1,13 @@
 import { View, Text, Image } from "@tarojs/components";
 import "./indexSCF.scss";
-import { Ellipsis } from "@taroify/icons"
+import { Ellipsis, Like } from "@taroify/icons"
 
 export default function SongContainerFav(
     {
         imgUrl,
         title,
         artist,
+        isLike,
         onClick,
         onIconClick
     }
@@ -18,7 +19,9 @@ export default function SongContainerFav(
       <Image className="coverSCF" src={ imgUrl }> </Image>
       <View className="textContainerSCF">
         <Text className="titleSCF">{title}</Text>
-        <Text className="artistSCF">{artist}</Text>
+        <View className="artistSCF">
+          {artist}
+        </View>
       </View>
       <View className="iconControllerSCF"
         style={{
