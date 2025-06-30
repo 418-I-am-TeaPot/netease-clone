@@ -29,9 +29,14 @@ function NCLyricsView({ showLyricsCb }: NCLyricsViewProps) {
     centeredLineIndex,
     setCenteredLineIndex,
   } = useLyrics();
-  const { currentTime, setCurrentTime, player } = usePlayerStore();
+  const { currentTime, setCurrentTime, player, currentSong } = usePlayerStore();
 
   const isScrollingRef = useRef<boolean>(false);
+
+  useEffect(() => {
+    if (!currentSong) return;
+    setScrollTop(0);
+  }, [currentSong]);
 
   // 监听：中线可见性 (centerIndicatorVisible)
   // 功能：实现歌词自动吸附
@@ -42,11 +47,11 @@ function NCLyricsView({ showLyricsCb }: NCLyricsViewProps) {
   // 监听：歌曲进度 (currentTime)
   // 功能：实现歌词自动滚动
   useEffect(() => {
+    console.log("currentime here", currentTime);
     if (!lyricsLines.length || !lyricsDimensions.length) return;
     const newActiveLineIndex = findMatchingLine(); // 找到与时间匹配的歌词行
     setActiveLineIndex(newActiveLineIndex);
     scrollToLine(newActiveLineIndex); // 滚动到定位到的歌词行
-    console.log("currentTime here", currentTime);
   }, [currentTime, lyricsLines, lyricsDimensions]);
 
   // 监听：活跃歌词行下标 (activeLineIndex)
@@ -85,14 +90,19 @@ function NCLyricsView({ showLyricsCb }: NCLyricsViewProps) {
   // 活跃歌词行变化时，滚动到该歌词行
   const scrollToLine = (index: number) => {
     const { top, height } = lyricsDimensions[index];
-    const newScrollTop = top + height / 2 + 15;
+    const newScrollTop = top + height / 2 - 2;
     setScrollTop(newScrollTop);
   };
 
   // currentTime变化时，找到当前正在播放的歌词index
   const findMatchingLine = () => {
+    if (currentTime < lyricsLines[0].time) return 0;
+    if (currentTime >= lyricsLines[lyricsLines.length - 1].time)
+      return lyricsLines.length - 1;
+
     return lyricsLines.findIndex((lyricLine, index, arr) => {
       const thisLineTime = lyricLine.time;
+      if (index === arr.length - 1) console.log("went wrong here", index);
       const nextLineTime = arr[index + 1].time;
       return thisLineTime <= currentTime && currentTime < nextLineTime;
     });
@@ -100,10 +110,8 @@ function NCLyricsView({ showLyricsCb }: NCLyricsViewProps) {
 
   // 找到用户点击的歌词行，并将其设置为活跃状态
   const seekToLine = (index: number) => {
-    console.log(index);
     setActiveLineIndex(index);
     const newTime = lyricsLines[index].time;
-    console.log("newTime", newTime);
     setCurrentTime(newTime);
     player?.seek(newTime);
   };
@@ -113,23 +121,26 @@ function NCLyricsView({ showLyricsCb }: NCLyricsViewProps) {
     const textStyle: string[] = ["lyric-text"];
     if (index === activeLineIndex) textStyle.push("lyric-text-active");
     if (index === centeredLineIndex) textStyle.push("lyric-text-centered");
-
     return textStyle.join(" ");
   };
 
   // 获取歌词的「背景」样式
   const getLineBgStyle = (index: number): string => {
     const bgStyle = ["lyric-line"];
-
     if (centeredLineIndex === index) bgStyle.push("lyric-line-active");
-
     return bgStyle.join(" ");
   };
 
   return (
     <View className="lyrics-view container-h">
       <View className="center-indicator container-h">
-        <Text style={{ fontSize: "12px", color: "rgba(255, 255, 255, 0.5)" }}>
+        <Text
+          style={{
+            fontSize: "12px",
+            color: "rgba(255, 255, 255, 0.5)",
+            fontWeight: 500,
+          }}
+        >
           {formatSecondsToMMSS(lyricsLines[centeredLineIndex]?.time) ?? "xx:xx"}
         </Text>
         <View className="container grow">
@@ -146,7 +157,11 @@ function NCLyricsView({ showLyricsCb }: NCLyricsViewProps) {
         className="container-v lyrics-scroll-view grow"
         onScroll={handleScroll}
       >
-        <View className="container" style={{ paddingTop: 296 }} />
+        <View
+          className="container"
+          style={{ paddingTop: 296 }}
+          onClick={showLyricsCb}
+        />
         {lyricsLines.map((l, index) => (
           <View
             onClick={() => {
@@ -158,7 +173,11 @@ function NCLyricsView({ showLyricsCb }: NCLyricsViewProps) {
             <Text className={getLineTextStyle(index)}>{l.text}</Text>
           </View>
         ))}
-        <View className="container" style={{ paddingBottom: 245 }} />
+        <View
+          className="container"
+          style={{ paddingBottom: 245 }}
+          onClick={showLyricsCb}
+        />
       </ScrollView>
     </View>
   );

@@ -17,19 +17,17 @@ export default function SongInfo({ showLyricsCb }: SongInfoProps) {
   };
 
   return (
-    <View onClick={showLyricsCb} className="songInfo container-v grow">
+    <View className="songInfo container-v grow">
       {/* 封面信息 */}
-      <View
-        style={{ justifyContent: "center", height: "80%" }}
-        className="songImg container-h grow"
-      >
+      <View onClick={showLyricsCb} className="songImg container-v grow">
         <Image
-          width={600}
-          height={600}
-          className="border"
+          style={{ borderRadius: 8 }}
+          height={650}
+          width={650}
+          mode="aspectFit"
           lazyLoad
           src={currentSong?.coverUrl || "https://img.yzcdn.cn/vant/cat.jpeg"}
-          shape="circle"
+          shape="square"
           placeholder={<Loading />}
           fallback={
             <text style={{ marginTop: "40%" }}>failed loading image</text>
@@ -37,15 +35,21 @@ export default function SongInfo({ showLyricsCb }: SongInfoProps) {
         />
       </View>
       {/* 歌曲信息与收藏功能 */}
-      <View className="songDetail  container-h grow">
-        <View className="container-v">
-          <Text>歌手：{currentSong?.name || "unknowed"}</Text>
-          <Text>歌名：{currentSong?.artists || "unknowed"}</Text>
+      <View className="songDetail container-h">
+        <View style={{ gap: 2 }} className="container-v">
+          <Text className="song-title">{currentSong?.name || "unknowed"}</Text>
+          <Text className="song-artist">
+            {currentSong?.artists || "unknowed"}
+          </Text>
         </View>
         {isLike ? (
-          <Like onClick={handleLike} size={20} />
+          <Like color="rgba(255, 0, 0, 0.7)" onClick={handleLike} size={28} />
         ) : (
-          <LikeOutlined onClick={handleLike} size={20} />
+          <LikeOutlined
+            color="rgba(255, 255, 255, 0.4)"
+            onClick={handleLike}
+            size={28}
+          />
         )}
       </View>
     </View>
