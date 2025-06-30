@@ -6,13 +6,11 @@ import { Image, NoticeBar } from "@taroify/core";
 import pauseIcon from "@/assets/icons/player/pause-sm.png";
 import playIcon from "@/assets/icons/player/play-sm.png";
 import playlistIcon from "@/assets/icons/player/playlist-sm.png";
-import cover from "@/assets/images/cover.png";
 import { usePlayerStore } from "@/store/player";
 import { usePlaylistStore } from "@/store/playlist";
-import { useEffect, useState } from "react";
 
 export default function NCMiniPlayer() {
-  const { togglePlay, playing, player, currentSong } = usePlayerStore();
+  const { playing, currentSong, resume, pause } = usePlayerStore();
   const { togglePlaylist } = usePlaylistStore();
 
   const openPlayer = () => {
@@ -20,8 +18,7 @@ export default function NCMiniPlayer() {
   };
 
   const handlePlayAndPause = () => {
-    playing ? player?.pause() : player?.play();
-    togglePlay();
+    playing ? pause() : resume();
   };
 
   return (

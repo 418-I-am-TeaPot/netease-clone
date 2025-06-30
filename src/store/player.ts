@@ -8,8 +8,8 @@ const innerAudioContext = Taro.createInnerAudioContext();
 interface PlayerState {
   currentSong: Song | null;
   playing: boolean;
+  setPlaying: (playing: boolean) => void;
   setSong: (song: Song) => void;
-  togglePlay: () => void;
   pause: () => void;
   resume: () => void;
   player: InnerAudioContext | null;
@@ -45,11 +45,12 @@ export const usePlayerStore = create<PlayerState>((set, get) => {
     player,
     currentSong: null,
     playing: false,
+    setPlaying: (playing) => set({ playing }),
     setSong: (song) => {
       player.src = `http://music.163.com/song/media/outer/url?id=${song.songId}.mp3`; // 设置播放器音频源
       return set({ currentSong: song, currentTime: 0 });
     },
-    togglePlay: () => set((state) => ({ playing: !state.playing })),
+
     pause: () => {
       player.pause();
       return set({ playing: false });
