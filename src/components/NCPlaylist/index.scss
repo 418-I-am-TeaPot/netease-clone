@@ -1,0 +1,31 @@
+.list-item {
+  align-items: center;
+  padding: 24px 36px;
+}
+
+.list-item-active {
+  background-color: #f5f5f7;
+}
+
+.song-info {
+  gap: 4px;
+}
+
+.song-name {
+  font-weight: 500;
+  font-size: large;
+  color: #26273a;
+}
+
+.artist-name {
+  font-size: small;
+  color: #868792;
+}
+
+.active-text {
+  color: #ff3a3c;
+}
+
+.custom-spinner-color {
+  color: #ff3a3c;
+}
