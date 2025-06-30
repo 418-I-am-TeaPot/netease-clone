@@ -6,6 +6,7 @@ export default defineAppConfig({
     "pages/search/index",
     "pages/search-result/index",
     "pages/profile/index",
+    "pages/login/index"
   ],
 
   window: {

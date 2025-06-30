@@ -1,12 +1,12 @@
 import { create } from "zustand";
 import { User } from "../models/user";
 
-interface PlaylistState {
+interface UserState {
   user: User | null;
   setUser: (user: User) => void;
 }
 
-export const usePlaylistStore = create<PlaylistState>((set, get) => ({
+export const useUserStore = create<UserState>((set, get) => ({
   user: null,
   setUser: (user) => {
     set({ user: user });
