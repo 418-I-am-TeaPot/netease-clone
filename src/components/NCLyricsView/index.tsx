@@ -42,11 +42,11 @@ function NCLyricsView({ showLyricsCb }: NCLyricsViewProps) {
   // 监听：歌曲进度 (currentTime)
   // 功能：实现歌词自动滚动
   useEffect(() => {
+    console.log("currentime here", currentTime);
     if (!lyricsLines.length || !lyricsDimensions.length) return;
     const newActiveLineIndex = findMatchingLine(); // 找到与时间匹配的歌词行
     setActiveLineIndex(newActiveLineIndex);
     scrollToLine(newActiveLineIndex); // 滚动到定位到的歌词行
-    console.log("currentTime here", currentTime);
   }, [currentTime, lyricsLines, lyricsDimensions]);
 
   // 监听：活跃歌词行下标 (activeLineIndex)
@@ -91,8 +91,13 @@ function NCLyricsView({ showLyricsCb }: NCLyricsViewProps) {
 
   // currentTime变化时，找到当前正在播放的歌词index
   const findMatchingLine = () => {
+    if (currentTime < lyricsLines[0].time) return 0;
+    if (currentTime >= lyricsLines[lyricsLines.length - 1].time)
+      return lyricsLines.length - 1;
+
     return lyricsLines.findIndex((lyricLine, index, arr) => {
       const thisLineTime = lyricLine.time;
+      if (index === arr.length - 1) console.log("went wrong here", index);
       const nextLineTime = arr[index + 1].time;
       return thisLineTime <= currentTime && currentTime < nextLineTime;
     });
@@ -100,10 +105,8 @@ function NCLyricsView({ showLyricsCb }: NCLyricsViewProps) {
 
   // 找到用户点击的歌词行，并将其设置为活跃状态
   const seekToLine = (index: number) => {
-    console.log(index);
     setActiveLineIndex(index);
     const newTime = lyricsLines[index].time;
-    console.log("newTime", newTime);
     setCurrentTime(newTime);
     player?.seek(newTime);
   };
@@ -113,16 +116,13 @@ function NCLyricsView({ showLyricsCb }: NCLyricsViewProps) {
     const textStyle: string[] = ["lyric-text"];
     if (index === activeLineIndex) textStyle.push("lyric-text-active");
     if (index === centeredLineIndex) textStyle.push("lyric-text-centered");
-
     return textStyle.join(" ");
   };
 
   // 获取歌词的「背景」样式
   const getLineBgStyle = (index: number): string => {
     const bgStyle = ["lyric-line"];
-
     if (centeredLineIndex === index) bgStyle.push("lyric-line-active");
-
     return bgStyle.join(" ");
   };
 

@@ -20,7 +20,7 @@ export const useLyrics = () => {
   // 初始化
   useEffect(() => {
     fetchLyrics();
-  }, []);
+  }, [currentSong]);
 
   // 监听活跃歌词行变化
   useEffect(() => {
@@ -32,16 +32,18 @@ export const useLyrics = () => {
     console.log("lyricsDimensions", lyricsDimensions);
   }, [lyricsDimensions]);
 
+  // 监听：歌词数据
+  // 功能：歌词数据重置了，再获取页面元素的维度信息
+  useEffect(() => {
+    if (!lyricsLines.length) return;
+    Taro.nextTick(() => getLyricDimensions());
+  }, [lyricsLines]);
+
   const fetchLyrics = async () => {
     if (!currentSong) return;
-
     const res = await getLyricsBySongId({ songId: currentSong.songId });
     const lyricLines = lrcParser(res);
     setLyricsLines(lyricLines);
-
-    setTimeout(() => {
-      getLyricDimensions();
-    }, 0);
   };
 
   const getLyricDimensions = () => {
@@ -49,14 +51,10 @@ export const useLyrics = () => {
       .selectAll(".lyric-line")
       .boundingClientRect((rects) => {
         if (!Array.isArray(rects)) return;
-
-        rects.forEach((rect) => {
-          if (!rect) return;
-          setLyricsDimensions((prev) => [
-            ...prev,
-            { top: rect.top - 296, height: rect.height },
-          ]);
-        });
+        const dims = rects
+          .filter((r) => r)
+          .map(({ top, height }) => ({ top: top - 296, height }));
+        setLyricsDimensions(dims);
       })
       .exec();
   };
@@ -67,7 +65,6 @@ export const useLyrics = () => {
     activeLineIndex,
     setActiveLineIndex,
     lyricsDimensions,
-    getLyricDimensions,
     centeredLineIndex,
     setCenteredLineIndex,
   };
