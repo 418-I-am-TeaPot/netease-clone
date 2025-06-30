@@ -1,4 +1,3 @@
-import { LYRICS } from "@/constants/lyrics";
 import { getLyricsBySongId } from "@/service/songService";
 import { usePlayerStore } from "@/store/player";
 import { lrcParser, LyricLine } from "@/utils/lyrics";
@@ -20,6 +19,8 @@ export const useLyrics = () => {
   // 初始化
   useEffect(() => {
     fetchLyrics();
+    setActiveLineIndex(0);
+    setCenteredLineIndex(0);
   }, [currentSong]);
 
   // 监听活跃歌词行变化

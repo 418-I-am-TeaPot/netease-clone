@@ -1,23 +1,20 @@
-import { Slider } from "@taroify/core";
-import { View } from "@tarojs/components";
+import { Image, Slider } from "@taroify/core";
+import { Text, View } from "@tarojs/components";
 import { ArrowLeft, Play, Pause, ArrowRight } from "@taroify/icons";
 import { usePlayerStore } from "@/store/player";
+import playIcon from "@/assets/icons/player/play-xl.png";
+import pauseIcon from "@/assets/icons/player/pause.png";
+import backIcon from "@/assets/icons/player/back.png";
+import forwardIcon from "@/assets/icons/player/forward.png";
 
 import "./index.scss";
 
 import { useEffect, useState } from "react";
 import { usePlaylistStore } from "@/store/playlist";
+import { formatSecondsToMMSS } from "@/utils/time";
 export default function PlayerControls() {
-  const {
-    playing,
-    player,
-    setSong,
-    currentTime,
-    currentSong,
-    resume,
-    pause,
-    setPlaying,
-  } = usePlayerStore();
+  const { playing, player, setSong, currentTime, resume, pause } =
+    usePlayerStore();
   const { currentItemIndex, playlistData, setCurrentItemIndex } =
     usePlaylistStore();
 
@@ -47,39 +44,6 @@ export default function PlayerControls() {
     resume();
   };
 
-  const CurrentTime = () => {
-    if (!player?.currentTime) return <></>;
-    const currentMinute = Math.floor(currentTime / 60)
-      .toString()
-      .padStart(2, "0");
-    const currentSecond = Math.floor(currentTime % 60)
-      .toString()
-      .padStart(2, "0");
-    return (
-      <>
-        <View>
-          {currentMinute}:{currentSecond}
-        </View>
-      </>
-    );
-  };
-  const DurationTime = () => {
-    if (!player?.currentTime) return <></>;
-    const durationSecond = Math.floor(player.duration % 60)
-      .toString()
-      .padStart(2, "0");
-    const durationMinute = Math.floor(player.duration / 60)
-      .toString()
-      .padStart(2, "0");
-    return (
-      <>
-        <View>
-          {durationMinute}:{durationSecond}
-        </View>
-      </>
-    );
-  };
-
   useEffect(() => {
     if (!player?.duration) return;
     setSiderValue((100 * currentTime) / player.duration);
@@ -88,33 +52,67 @@ export default function PlayerControls() {
   return (
     <View className="playerControls container-v grow">
       {/* 歌曲进度条 */}
-      <View className="songProcess">
-        <Slider
-          max={100}
-          min={0}
-          size={5}
-          value={sliderValue}
-          onChange={(value) => {
-            setSiderValue(value);
-            player?.seek((value / 100) * player.duration);
-          }}
-        />
-        <View className="container-h songTime">
-          <CurrentTime />
-          <DurationTime />
+      <View className="songProcess container-h grow">
+        <View style={{ gap: 12 }} className="container-v grow">
+          <Slider
+            max={100}
+            min={0}
+            size={2}
+            value={sliderValue}
+            onChange={(value) => {
+              setSiderValue(value);
+              player?.seek((value / 100) * player.duration);
+            }}
+          />
+          <View className="container-h  songTime">
+            <Text className="progress-text">
+              {formatSecondsToMMSS(currentTime)}
+            </Text>
+            <Text className="progress-text">
+              {formatSecondsToMMSS(player?.duration || 0)}
+            </Text>
+          </View>
         </View>
       </View>
 
       {/* 歌曲播放控件 */}
-      <View className="songButtonGroups container-h grow">
-        <ArrowLeft onClick={handlePreSong} size={40} />
-        {playing ? (
-          <Pause size={40} onClick={handleStartClick} />
-        ) : (
-          <Play size={40} onClick={handleStartClick} />
-        )}
-        <ArrowRight size={40} onClick={handleNextSong} />
+      <View className="songButtonGroupsWrapper container-h grow">
+        <View className="songButtonGroups container-h grow">
+          <Image
+            className="control-button"
+            onClick={handlePreSong}
+            height={48}
+            width={48}
+            src={backIcon}
+          />
+
+          {playing ? (
+            <Image
+              className="control-button"
+              onClick={handleStartClick}
+              height={64}
+              width={64}
+              src={pauseIcon}
+            />
+          ) : (
+            <Image
+              className="control-button"
+              onClick={handleStartClick}
+              height={64}
+              width={64}
+              src={playIcon}
+            />
+          )}
+          <Image
+            className="control-button"
+            onClick={handleNextSong}
+            height={48}
+            width={48}
+            src={forwardIcon}
+          />
+        </View>
       </View>
+      <View className="container-v grow"></View>
     </View>
   );
 }

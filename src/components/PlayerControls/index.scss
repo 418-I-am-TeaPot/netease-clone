@@ -1,17 +1,39 @@
 .taroify-slider__thumb {
-  height: 30px;
-  width: 30px;
+  height: 16px;
+  width: 16px;
 }
+
 .playerControls {
-  height: 100%;
+  padding: 24px 56px;
+  z-index: 1;
 }
+
 .songProcess {
-  height: 60%;
-  margin-top: 60px;
-  padding: 0 48px;
+  align-items: center;
 }
+
+.songTime {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progress-text {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: small;
+  font-weight: 500;
+}
+
+.songButtonGroupsWrapper {
+  align-items: center;
+  justify-content: center;
+}
+
 .songButtonGroups {
   justify-content: space-between;
   padding: 0 120px;
-  height: 40%;
+  align-items: center;
+}
+
+.control-button {
+  opacity: 0.85;
 }

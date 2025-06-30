@@ -29,9 +29,14 @@ function NCLyricsView({ showLyricsCb }: NCLyricsViewProps) {
     centeredLineIndex,
     setCenteredLineIndex,
   } = useLyrics();
-  const { currentTime, setCurrentTime, player } = usePlayerStore();
+  const { currentTime, setCurrentTime, player, currentSong } = usePlayerStore();
 
   const isScrollingRef = useRef<boolean>(false);
+
+  useEffect(() => {
+    if (!currentSong) return;
+    setScrollTop(0);
+  }, [currentSong]);
 
   // 监听：中线可见性 (centerIndicatorVisible)
   // 功能：实现歌词自动吸附
@@ -85,7 +90,7 @@ function NCLyricsView({ showLyricsCb }: NCLyricsViewProps) {
   // 活跃歌词行变化时，滚动到该歌词行
   const scrollToLine = (index: number) => {
     const { top, height } = lyricsDimensions[index];
-    const newScrollTop = top + height / 2 + 15;
+    const newScrollTop = top + height / 2 - 2;
     setScrollTop(newScrollTop);
   };
 
@@ -129,7 +134,13 @@ function NCLyricsView({ showLyricsCb }: NCLyricsViewProps) {
   return (
     <View className="lyrics-view container-h">
       <View className="center-indicator container-h">
-        <Text style={{ fontSize: "12px", color: "rgba(255, 255, 255, 0.5)" }}>
+        <Text
+          style={{
+            fontSize: "12px",
+            color: "rgba(255, 255, 255, 0.5)",
+            fontWeight: 500,
+          }}
+        >
           {formatSecondsToMMSS(lyricsLines[centeredLineIndex]?.time) ?? "xx:xx"}
         </Text>
         <View className="container grow">
@@ -146,7 +157,11 @@ function NCLyricsView({ showLyricsCb }: NCLyricsViewProps) {
         className="container-v lyrics-scroll-view grow"
         onScroll={handleScroll}
       >
-        <View className="container" style={{ paddingTop: 296 }} />
+        <View
+          className="container"
+          style={{ paddingTop: 296 }}
+          onClick={showLyricsCb}
+        />
         {lyricsLines.map((l, index) => (
           <View
             onClick={() => {
@@ -158,7 +173,11 @@ function NCLyricsView({ showLyricsCb }: NCLyricsViewProps) {
             <Text className={getLineTextStyle(index)}>{l.text}</Text>
           </View>
         ))}
-        <View className="container" style={{ paddingBottom: 245 }} />
+        <View
+          className="container"
+          style={{ paddingBottom: 245 }}
+          onClick={showLyricsCb}
+        />
       </ScrollView>
     </View>
   );
