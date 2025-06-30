@@ -9,15 +9,60 @@ import { Play, Like } from "@taroify/icons"
 import { usePlayerStore } from "@/store/player";
 import { usePlaylistStore } from "@/store/playlist";
 import { Toast } from "@taroify/core"
+import Taro from "@tarojs/taro";
 
 export default function SongListFav(
     {
-        items,
-        search,
-        loadStart = true,
-        loadingMore = true
+        user
     }
 ) {
+
+    const [items, setItems] = useState<Song[]>([])
+
+    const requestWithLoading = async () => {
+            try {
+                Taro.showLoading({ 
+                title: '加载中', 
+                mask: true  // 添加遮罩防止触摸穿透
+                });
+        
+                const response = await Taro.request({
+                    url: 'http://localhost:8080/songs',
+                    method: 'GET', 
+                    success: (res) => {
+                        console.log('Data:', res.data);
+                        setItems(res.data.data);
+                        if(res.data.data) {
+                            let initItems: Song[];
+                            if(res.data.data.length < 10)
+                                initItems = res.data.data;
+                            else
+                                initItems = res.data.data.slice(0, 10);
+                            setList(initItems);
+                        } else
+                            setList([]);
+                    },
+                    fail: (err) => {
+                        console.error('Request failed:', err);
+                        Taro.showToast({
+                            title: '加载歌曲失败，请稍后重试',
+                            icon: 'none',
+                            duration: 2000,
+                        });
+                    }
+                });
+                return response;
+            } catch (error) {
+                console.error('Request error:', error);
+                throw error;
+            } finally {
+                Taro.hideLoading();
+            }
+        };
+    
+    useEffect(()=> {
+        requestWithLoading();},[]);
+
     const [hasMore, setHasMore] = useState(true);
     let initItems: Song[];
     if(items.length < 10)
@@ -122,6 +167,7 @@ export default function SongListFav(
             console.log("currentSongLike:" + isLike);
             setIsLike();
         }
+        requestWithLoading();
     }
 
   return (
@@ -153,7 +199,7 @@ export default function SongListFav(
                 <View className="popupLikeContainer"
                     onClick={handlePopupLikeClick}>
                     <Like className="popupLikeIcon" size="28px"
-                        style={popupSong?.isLike?{color: "#ff0000"}:{color: "#f888888"}}>
+                        style={popupSong?.isLike?{color: "#ff0000"}:{color: "#888888"}}>
                     </Like>
                     <View className="popupNextText">
                         {popupSong?.isLike?"取消喜欢":"喜欢"}
@@ -161,11 +207,11 @@ export default function SongListFav(
                 </View>
         </Popup>
 
-        {loadStart && <List style="
+        <List style="
             width: 100%;
             flex: 1;"
-            loading={loading && loadingMore}
-            hasMore={hasMore && loadingMore}
+            loading={loading}
+            hasMore={hasMore}
             onLoad={() => {
                 setLoading(true)
                 setTimeout(() => {
@@ -185,6 +231,7 @@ export default function SongListFav(
                         imgUrl={item.coverUrl}
                         title={item.name}
                         artist={item.artists}
+                        isLike={item.isLike}
                         onClick={() => handleItemClick(item)}
                         onIconClick={(event) => handleItemIconClick(item, index, event)}
                     />
@@ -199,7 +246,7 @@ export default function SongListFav(
                 width: 100%;
                 height: 20px;">
             </List.Placeholder>
-        </List>}
+        </List>
     </View>
   );
 }
