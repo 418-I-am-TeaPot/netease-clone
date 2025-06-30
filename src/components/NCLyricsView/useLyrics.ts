@@ -1,4 +1,6 @@
 import { LYRICS } from "@/constants/lyrics";
+import { getLyricsBySongId } from "@/service/songService";
+import { usePlayerStore } from "@/store/player";
 import { lrcParser, LyricLine } from "@/utils/lyrics";
 import Taro from "@tarojs/taro";
 import { useEffect, useState } from "react";
@@ -13,10 +15,11 @@ export const useLyrics = () => {
     []
   );
 
+  const { currentSong } = usePlayerStore();
+
   // 初始化
   useEffect(() => {
     fetchLyrics();
-    getLyricDimensions();
   }, []);
 
   // 监听活跃歌词行变化
@@ -24,9 +27,21 @@ export const useLyrics = () => {
     console.log("activeLineIndex", activeLineIndex);
   }, [activeLineIndex]);
 
+  useEffect(() => {
+    if (!lyricsDimensions) return;
+    console.log("lyricsDimensions", lyricsDimensions);
+  }, [lyricsDimensions]);
+
   const fetchLyrics = async () => {
-    const { lyricLines, contributor } = lrcParser(LYRICS.lyric);
+    if (!currentSong) return;
+
+    const res = await getLyricsBySongId({ songId: currentSong.songId });
+    const lyricLines = lrcParser(res);
     setLyricsLines(lyricLines);
+
+    setTimeout(() => {
+      getLyricDimensions();
+    }, 0);
   };
 
   const getLyricDimensions = () => {
