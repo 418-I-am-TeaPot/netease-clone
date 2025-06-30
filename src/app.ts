@@ -5,6 +5,8 @@ import "./app.scss";
 import { usePlayerStore } from "./store/player";
 import { MOCK_SONGS } from "./constants/songs";
 import { usePlaylistStore } from "./store/playlist";
+import { useUserStore } from "./store/user";
+import Taro from "@tarojs/taro";
 
 function App({ children }: PropsWithChildren<any>) {
   useLaunch(() => {
@@ -13,6 +15,15 @@ function App({ children }: PropsWithChildren<any>) {
 
   const { setSong } = usePlayerStore();
   const { playlistData, setPlaylistData } = usePlaylistStore();
+  const {user} = useUserStore()
+
+  useEffect(()=> {
+    console.log("user state",user)
+    if(!user) {
+      console.log('jhere')
+      Taro.navigateTo({'url':'pages/login/index'})
+    }
+  },[user])
 
   // 初始化播放列表
   useEffect(() => {
