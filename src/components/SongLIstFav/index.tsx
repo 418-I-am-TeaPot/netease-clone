@@ -10,6 +10,7 @@ import { usePlayerStore } from "@/store/player";
 import { usePlaylistStore } from "@/store/playlist";
 import { Toast } from "@taroify/core"
 import Taro from "@tarojs/taro";
+import { BASE_URL } from "@/service/config";
 
 export default function SongListFav(
     {
@@ -20,6 +21,40 @@ export default function SongListFav(
 
     const [items, setItems] = useState<Song[]>([])
 
+    const requestLike = async (ifGood) => {
+            try {
+                Taro.showLoading({ 
+                title: '加载中', 
+                mask: true  // 添加遮罩防止触摸穿透
+                });
+        
+                const response = await Taro.request({
+                    url: BASE_URL + "/user/favorites/" + popupSong.songId,
+                    method: 'DELETE',
+                    header: {
+                        'content-type': 'application/json',
+                        'Accept': 'application/json',
+                        'openid': user.openid
+                    },
+                    success: (res) => {
+                        ifGood();
+                    },
+                    fail: (err) => {
+                        Taro.showToast({
+                            title: '取消收藏失败，请稍后重试',
+                            icon: 'none',
+                            duration: 2000,
+                        });
+                    }
+                });
+                return response;
+            } catch (error) {
+                throw error;
+            } finally {
+                Taro.hideLoading();
+            }
+        };
+
     const requestWithLoading = async () => {
             try {
                 Taro.showLoading({ 
@@ -28,10 +63,14 @@ export default function SongListFav(
                 });
         
                 const response = await Taro.request({
-                    url: 'http://localhost:8080/songs',
+                    url: BASE_URL + '/user/favorites',
                     method: 'GET', 
+                    header: {
+                        'content-type': 'application/json',
+                        'Accept': 'application/json',
+                        'openid': user.openid
+                    },
                     success: (res) => {
-                        console.log('Data:', res.data);
                         setItems(res.data.data);
                         if(res.data.data) {
                             let initItems: Song[];
@@ -44,7 +83,6 @@ export default function SongListFav(
                             setList([]);
                     },
                     fail: (err) => {
-                        console.error('Request failed:', err);
                         Taro.showToast({
                             title: '加载歌曲失败，请稍后重试',
                             icon: 'none',
@@ -54,7 +92,6 @@ export default function SongListFav(
                 });
                 return response;
             } catch (error) {
-                console.error('Request error:', error);
                 throw error;
             } finally {
                 Taro.hideLoading();
@@ -104,10 +141,6 @@ export default function SongListFav(
             return;
         }
         let playlist: Song[] = playlistData;
-        console.log(playlistData);
-        console.log("currentItemIndex:" + currentItemIndex);
-        console.log("currentSong:" + (currentSong?currentSong.name:undefined));
-        console.log("playing:" + playing);
         let flag = false;
         for (let i = 0; i < playlistData.length; i++) {
             if (playlistData[i].songId == song.songId) {
@@ -132,10 +165,6 @@ export default function SongListFav(
     }
 
     const handlePopupNextClick = () => {
-        console.log(playlistData);
-        console.log("currentItemIndex:" + currentItemIndex);
-        console.log("currentSong:" + (currentSong?currentSong.name:undefined));
-        console.log("playing:" + playing);
         let song: Song = popupSong;
         if(currentSong?.songId == song.songId) {
             Toast.open("歌曲已在播放");
@@ -158,18 +187,28 @@ export default function SongListFav(
     }
 
     const handlePopupLikeClick = () => {
-        console.log((popupSong.isLike?"dislike":"like") + popupSong.songId);
         let listChange: Song[] = list;
         listChange[popupSongIndex].isLike = !listChange[popupSongIndex].isLike;
         setIsPopupVisible(false);
-        setList(listChange);
-        console.log("currentSong:" + (currentSong?currentSong.name:undefined));
-        if(currentSong && popupSong.songId == currentSong?.songId) {
-            console.log("currentSongLike:" + isLike);
-            setIsLike();
-        }
-        requestWithLoading();
+        requestLike(() => {
+            setList(listChange);
+            if(currentSong && popupSong.songId == currentSong?.songId) {
+                setIsLike();
+            }
+            requestWithLoading();
+        });
     }
+
+  if(!items || items == undefined || items.length == 0)
+    return 
+        <View style="
+            width: 100%;
+            margin-top: 40px;
+            text-align: center;
+            font-size: 50px;
+            color: #444444;">
+            {"没有喜欢的歌曲"}
+        </View>
 
   return (
     <View style="
@@ -200,10 +239,10 @@ export default function SongListFav(
                 <View className="popupLikeContainer"
                     onClick={handlePopupLikeClick}>
                     <Like className="popupLikeIcon" size="28px"
-                        style={popupSong?.isLike?{color: "#ff0000"}:{color: "#888888"}}>
+                        style={{color: "#ff0000"}}>
                     </Like>
                     <View className="popupNextText">
-                        {popupSong?.isLike?"取消喜欢":"喜欢"}
+                        {"取消喜欢"}
                     </View>
                 </View>
         </Popup>

@@ -7,6 +7,7 @@ import { usePlaylistStore } from "@/store/playlist";
 import { Toast } from "@taroify/core";
 import Taro from "@tarojs/taro";
 import { useState, useEffect } from "react";
+import { BASE_URL } from "@/service/config";
 
 export default function SongListHorizental(
     {
@@ -27,14 +28,17 @@ export default function SongListHorizental(
             });
     
             const response = await Taro.request({
-                url: 'http://localhost:8080/songs',
+                url: BASE_URL + "/songs",
                 method: 'GET', 
+                header: {
+                    'content-type': 'application/json',
+                    'Accept': 'application/json',
+                    'openid': user.openid
+                },
                 success: (res) => {
-                    console.log('Data:', res.data);
                     setItems(res.data.data.slice(0, 10));
                 },
                 fail: (err) => {
-                    console.error('Request failed:', err);
                     Taro.showToast({
                         title: '加载歌曲失败，请稍后重试',
                         icon: 'none',
@@ -44,7 +48,6 @@ export default function SongListHorizental(
             });
             return response;
         } catch (error) {
-            console.error('Request error:', error);
             throw error;
         } finally {
             Taro.hideLoading();
@@ -60,10 +63,6 @@ export default function SongListHorizental(
             return;
         }
         let playlist: Song[] = playlistData;
-        console.log(playlistData);
-        console.log("currentItemIndex:" + currentItemIndex);
-        console.log("currentSong:" + (currentSong?currentSong.name:undefined));
-        console.log("playing:" + playing);
         let flag = false;
         for (let i = 0; i < playlistData.length; i++) {
             if (playlistData[i].songId == song.songId) {
@@ -79,6 +78,17 @@ export default function SongListHorizental(
         setPlaylistData(playlist);
         setSong(song);
     }
+
+    if(!items || items == undefined || items.length == 0)
+    return (
+        <View style="
+            width: 100%;
+            margin-top: 40px;
+            text-align: center;
+            font-size: 30px;
+            color: #444444;">
+            {"暂无数据"}
+        </View>);
 
   return (
     <ScrollView 

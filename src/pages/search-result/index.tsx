@@ -11,8 +11,8 @@ import { usePlaylistStore } from "@/store/playlist";
 import { User } from "@/models/user";
 
 export default function SearchResult() {
-  const user: User = {openid: "123", name: "123", bio: "123", avatarUrl: "123", registeredAt: 123, gender: 1};
-  
+  const user: User = {openid: "1", name: "alan", bio: "我是alan", avatarUrl: "syljbh00m.hd-bkt.clouddn.com/8ae0c571-e5dc-41a2-a534-ba653c54bb75.jpg", registeredAt: 1751163646102, gender: 1};
+
   const [searchKey, setSearchKey] = useState<string>("");
 
   const searchRef = useRef<any>(null);
@@ -45,7 +45,8 @@ export default function SearchResult() {
   const { textInput, setTextInput } = useSearch();
 
   const handleSearch = () => {
-      Taro.navigateTo({ url: `/pages/search-result/index?q=${textInput}` });
+      Taro.setNavigationBarTitle({ title: textInput});
+      setSearchKey(textInput);
     };
 
   const handleCancel = () => {
@@ -83,6 +84,7 @@ export default function SearchResult() {
           <SongListVertical
             user={user}
             search={searchKey}
+            useSearch={true}
           />
       </View>
       <NCMiniPlayer />
