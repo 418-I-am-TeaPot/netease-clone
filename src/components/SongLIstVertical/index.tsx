@@ -7,15 +7,62 @@ import { Song } from "@/models/song";
 import { usePlayerStore } from "@/store/player";
 import { usePlaylistStore } from "@/store/playlist";
 import { Toast } from "@taroify/core";
+import Taro from "@tarojs/taro";
 
 export default function SongListVertical(
     {
-        items,
-        search,
-        loadStart = true,
-        loadingMore = true
+        user,
+        search
     }
 ) {
+    const [items, setItems] = useState<Song[]>([])
+
+    console.log(search);
+    console.log(search == "" || search == undefined);
+
+    let url: String;
+    if(search == "" || search == undefined) {
+        url = 'http://localhost:8080/songs';
+    } else {
+        url = 'http://localhost:8080/songs/search?q=' + search;
+    }
+    console.log(url);
+
+    const requestWithLoading = async (url) => {
+            try {
+                Taro.showLoading({ 
+                title: '加载中', 
+                mask: true  // 添加遮罩防止触摸穿透
+                });
+        
+                const response = await Taro.request({
+                    url: url,
+                    method: 'GET', 
+                    success: (res) => {
+                        console.log('Data:', res.data);
+                        setItems(res.data.data);
+                    },
+                    fail: (err) => {
+                        console.error('Request failed:', err);
+                        Taro.showToast({
+                            title: '加载歌曲失败，请稍后重试',
+                            icon: 'none',
+                            duration: 2000,
+                        });
+                    }
+                });
+                return response;
+            } catch (error) {
+                console.error('Request error:', error);
+                throw error;
+            } finally {
+                Taro.hideLoading();
+            }
+        };
+
+    useEffect(()=> {
+        requestWithLoading(url);},[search]);
+    
     const [hasMore, setHasMore] = useState(true);
     let initItems: Song[];
     if(items.length < 10)
@@ -71,11 +118,11 @@ export default function SongListVertical(
             display: flex;
             flex-direction: column;
             background-color: #f3f7f9;">
-        {loadStart && <List style="
+        <List style="
             width: 100%;
             flex: 1;"
-            loading={loading && loadingMore}
-            hasMore={hasMore && loadingMore}
+            loading={loading}
+            hasMore={hasMore}
             onLoad={() => {
                 setLoading(true)
                 setTimeout(() => {
@@ -95,6 +142,7 @@ export default function SongListVertical(
                         imgUrl={item.coverUrl}
                         title={item.name}
                         artist={item.artists}
+                        isLike={item.isLike}
                         onClick={() => handleItemClick(item)}
                     />
                 ))
@@ -108,7 +156,7 @@ export default function SongListVertical(
                 width: 100%;
                 height: 20px;">
             </List.Placeholder>
-        </List>}
+        </List>
     </View>
   );
 }
