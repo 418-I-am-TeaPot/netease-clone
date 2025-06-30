@@ -8,8 +8,16 @@ import "./index.scss";
 import { useEffect, useState } from "react";
 import { usePlaylistStore } from "@/store/playlist";
 export default function PlayerControls() {
-  const { playing, player, setSong, currentTime, currentSong, resume, pause } =
-    usePlayerStore();
+  const {
+    playing,
+    player,
+    setSong,
+    currentTime,
+    currentSong,
+    resume,
+    pause,
+    setPlaying,
+  } = usePlayerStore();
   const { currentItemIndex, playlistData, setCurrentItemIndex } =
     usePlaylistStore();
 
@@ -28,11 +36,13 @@ export default function PlayerControls() {
       setCurrentItemIndex[currentItemIndex - 1];
     }
     setSiderValue(0);
+    resume();
   };
   const handleNextSong = () => {
     setSong(playlistData[(currentItemIndex + 1) % playlistData.length]);
     setCurrentItemIndex((currentItemIndex + 1) % playlistData.length);
     setSiderValue(0);
+    resume();
   };
 
   const CurrentTime = () => {
@@ -73,9 +83,6 @@ export default function PlayerControls() {
     setSiderValue((100 * currentTime) / player.duration);
   }, [currentTime]);
 
-  useEffect(() => {
-    resume();
-  }, [currentSong]);
   return (
     <View className="playerControls container-v grow">
       {/* 歌曲进度条 */}
