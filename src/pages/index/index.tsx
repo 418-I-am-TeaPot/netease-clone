@@ -1,5 +1,5 @@
 import { Search } from "@taroify/core";
-import { View, ScrollView } from "@tarojs/components";
+import { View } from "@tarojs/components";
 import { useLoad } from "@tarojs/taro";
 import "./index.scss";
 import Taro from "@tarojs/taro";
@@ -8,37 +8,15 @@ import NCPlaylist from "@/components/NCPlaylist";
 import { usePlaylistStore } from "@/store/playlist";
 import SongListVertical from "@/components/SongLIstVertical";
 import SongListHorizental from "@/components/SongLIstHorizental";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useSearch } from "../search/useSearch";
-import { Song } from "@/models/song";
-import axios from "axios"; 
-import { title } from "process";
+import { User } from "@/models/user";
 
 export default function Index() {
-  const [songs, setSongs] = useState<Song[]>([])
-  const [loading, setLoading] = useState<boolean>(false)
+  const user: User = {openid: "123", name: "123", bio: "123", avatarUrl: "123", registeredAt: 123, gender: 1};
 
   useLoad(() => {
     console.log("Page loaded.");
-    const loadSongs = () => { Taro.request({
-        url: 'http://localhost:8080/songs',
-        method: 'GET', 
-        success: (res) => {
-          console.log('Data:', res.data);
-          setSongs(res.data.data);
-          setLoading(true);
-        },
-        fail: (err) => {
-          console.error('Request failed:', err);
-          Taro.showToast({
-            title: '加载歌曲失败，请稍后重试',
-            icon: 'none',
-            duration: 2000,
-          });
-        }
-      });
-    }
-    loadSongs();
   });
 
   const searchRef = useRef<any>(null);
@@ -99,8 +77,7 @@ export default function Index() {
       
       <View>
         <SongListHorizental
-          items={songs.slice(0, 10)}
-          loadStart={loading}
+          user={user}
         />
       </View>
 
@@ -112,9 +89,7 @@ export default function Index() {
         width: 90%;
         margin-left: 5%;">
         <SongListVertical
-          items={songs}
-          search={""}
-          loadStart={loading}
+          user = {user}
         />
       </View>
       <NCMiniPlayer />
