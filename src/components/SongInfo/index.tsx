@@ -5,7 +5,11 @@ import { usePlayerStore } from "@/store/player";
 
 import "./index.scss";
 
-export default function SongInfo() {
+interface SongInfoProps {
+  showLyricsCb: () => void;
+}
+
+export default function SongInfo({ showLyricsCb }: SongInfoProps) {
   const { currentSong, isLike, setIsLike } = usePlayerStore();
 
   const handleLike = () => {
@@ -13,7 +17,7 @@ export default function SongInfo() {
   };
 
   return (
-    <View className="songInfo container-v grow">
+    <View onClick={showLyricsCb} className="songInfo container-v grow">
       {/* 封面信息 */}
       <View
         style={{ justifyContent: "center", height: "80%" }}

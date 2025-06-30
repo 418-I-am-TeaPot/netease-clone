@@ -14,7 +14,11 @@ import { formatSecondsToMMSS } from "@/utils/time";
 import { debounce } from "lodash";
 import { usePlayerStore } from "@/store/player";
 
-function NCLyricsView() {
+interface NCLyricsViewProps {
+  showLyricsCb: () => void;
+}
+
+function NCLyricsView({ showLyricsCb }: NCLyricsViewProps) {
   const [scrollTop, setScrollTop] = useState(0);
   const [centerIndicatorVisible, setCenterIndicatorVisible] = useState(true);
   const {
@@ -25,7 +29,7 @@ function NCLyricsView() {
     centeredLineIndex,
     setCenteredLineIndex,
   } = useLyrics();
-  const { currentTime } = usePlayerStore();
+  const { currentTime, setCurrentTime, player } = usePlayerStore();
 
   const isScrollingRef = useRef<boolean>(false);
 
@@ -42,6 +46,7 @@ function NCLyricsView() {
     const newActiveLineIndex = findMatchingLine(); // 找到与时间匹配的歌词行
     setActiveLineIndex(newActiveLineIndex);
     scrollToLine(newActiveLineIndex); // 滚动到定位到的歌词行
+    console.log("currentTime here", currentTime);
   }, [currentTime, lyricsLines, lyricsDimensions]);
 
   // 监听：活跃歌词行下标 (activeLineIndex)
@@ -97,6 +102,10 @@ function NCLyricsView() {
   const seekToLine = (index: number) => {
     console.log(index);
     setActiveLineIndex(index);
+    const newTime = lyricsLines[index].time;
+    console.log("newTime", newTime);
+    setCurrentTime(newTime);
+    player?.seek(newTime);
   };
 
   // 获取歌词的「文本」样式
@@ -140,7 +149,9 @@ function NCLyricsView() {
         <View className="container" style={{ paddingTop: 296 }} />
         {lyricsLines.map((l, index) => (
           <View
-            onClick={() => seekToLine(index)}
+            onClick={() => {
+              index === centeredLineIndex ? seekToLine(index) : showLyricsCb();
+            }}
             id={`line-${index}`}
             className={getLineBgStyle(index)}
           >
