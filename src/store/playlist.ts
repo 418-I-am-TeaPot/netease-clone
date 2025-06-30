@@ -1,3 +1,4 @@
+import { MOCK_SONGS } from "@/constants/songs";
 import { Song } from "@/models/song";
 import { create } from "zustand";
 interface PlaylistState {
@@ -14,6 +15,6 @@ export const usePlaylistStore = create<PlaylistState>((set, get) => ({
   togglePlaylist: () => set((state) => ({ playlistOpen: !state.playlistOpen })),
   playlistData: [],
   setPlaylistData: (playlist) => set({ playlistData: playlist }),
-  currentItemIndex: -1,
+  currentItemIndex: 0,
   setCurrentItemIndex: (newIndex) => set({ currentItemIndex: newIndex }),
 }));
