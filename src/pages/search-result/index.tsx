@@ -8,12 +8,12 @@ import SongListVertical from "@/components/SongLIstVertical";
 import NCMiniPlayer from "@/components/NCMiniPlayer";
 import NCPlaylist from "@/components/NCPlaylist";
 import { usePlaylistStore } from "@/store/playlist";
+import { User } from "@/models/user";
 
 export default function SearchResult() {
-  const [items, setItems] = useState<{id:string, artist:string, title: string, imgUrl: string}[]>([]);
+  const user: User = {openid: "123", name: "123", bio: "123", avatarUrl: "123", registeredAt: 123, gender: 1};
+  
   const [searchKey, setSearchKey] = useState<string>("");
-  const [resultNum, setResultNum] = useState<number>(0);
-  const [loading, setLoading] = useState(false);
 
   const searchRef = useRef<any>(null);
 
@@ -22,27 +22,6 @@ export default function SearchResult() {
     Taro.setNavigationBarTitle({ title: options.q });
     setSearchKey(options.q);
     setTextInput(options.q);
-    const loadSongs = () => { 
-      Taro.request({
-        url: 'http://localhost:8080/songs/search?q=' + options.q,
-        method: 'GET', 
-        success: (res) => {
-          console.log('Data:', res.data);
-          setItems(res.data.data);
-          setResultNum(res.data.data.length);
-          setLoading(true);
-        },
-        fail: (err) => {
-          console.error('Request failed:', err);
-          Taro.showToast({
-            title: '加载歌曲失败，请稍后重试',
-            icon: 'none',
-            duration: 2000,
-          });
-        }
-      });
-    }
-    loadSongs();
   });
 
   const [showOverlay, setShowOverlay] = useState(false);
@@ -96,17 +75,16 @@ export default function SearchResult() {
         </View>
       )}
 
-      {loading && <View className="resultNum">
-        搜索到{resultNum}个结果
-      </View>}
-      {loading && <View style="
+      <View className="resultNum">
+      </View>
+       <View style="
         width: 90%;
         margin-left: 5%;">
           <SongListVertical
-            items={items}
+            user={user}
             search={searchKey}
           />
-      </View>}
+      </View>
       <NCMiniPlayer />
       <NCPlaylist open={playlistOpen} onClose={togglePlaylist} />
     </View>
