@@ -29,6 +29,7 @@ export default function Me() {
   
     const [pullLoading, setPullLoading] = useState(false)
     const [reachTop, setReachTop] = useState(true)
+    const [reload, setReload] = useState(true)
 
     usePageScroll(({ scrollTop }) => setReachTop(scrollTop === 0))
 
@@ -37,7 +38,9 @@ export default function Me() {
       loading = {pullLoading}
       reachTop = {reachTop}
       onRefresh={() => {
+        console.log(reload);
         setPullLoading(true);
+        setReload(!reload);
         setTimeout(() => {
           setPullLoading(false);
         }, 1000)
@@ -67,6 +70,7 @@ export default function Me() {
       
       <View>
         <SongListFav
+            reload={reload}
             user={user}
         />
       </View>
