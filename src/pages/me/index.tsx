@@ -1,16 +1,17 @@
 import { View } from "@tarojs/components";
-import Taro, { useLoad } from "@tarojs/taro";
+import Taro, { useDidShow, useLoad } from "@tarojs/taro";
 import "./index.scss";
-import { Flex,Image,List,Cell,Loading,Sticky } from "@taroify/core";
+import { Flex,Image,Cell,Sticky,PullRefresh } from "@taroify/core";
 import NCMiniPlayer from "@/components/NCMiniPlayer";
 import { usePlaylistStore } from "@/store/playlist";
 import NCPlaylist from "@/components/NCPlaylist";
+import SongListFav from "@/components/SongLIstFav";
 import { useState } from "react";
+import { User } from "@/models/user";
+import { usePageScroll } from "@tarojs/taro";
 
 export default function Me() {
-  useLoad(() => {
-    console.log("Page loaded.");
-  });
+  const user: User = {openid: "123", name: "123", bio: "123", avatarUrl: "123", registeredAt: 123, gender: 1};
 
   const { playlistOpen, togglePlaylist } = usePlaylistStore();
 
@@ -18,13 +19,32 @@ export default function Me() {
     Taro.navigateTo({ url: "/pages/profile/index" });
   };
 
+    useLoad(() => {
+      console.log("Page loaded.");
+    });
 
-  const [hasMore, setHasMore] = useState(true)
-  const [list, setList] = useState<string[]>([])
-  const [loading, setLoading] = useState(false)
+    useDidShow(() => {
+      console.log("Page show.");
+    });
   
+    const [pullLoading, setPullLoading] = useState(false)
+    const [reachTop, setReachTop] = useState(true)
+    const [reload, setReload] = useState(true)
+
+    usePageScroll(({ scrollTop }) => setReachTop(scrollTop === 0))
+
   return (
-    <View className="me">
+    <PullRefresh
+      loading = {pullLoading}
+      reachTop = {reachTop}
+      onRefresh={() => {
+        console.log(reload);
+        setPullLoading(true);
+        setReload(!reload);
+        setTimeout(() => {
+          setPullLoading(false);
+        }, 1000)
+      }}>
         <View style={{ height: '20px' }} />
         <Flex justify="center">  
           <Flex.Item span={6}></Flex.Item>
@@ -45,41 +65,19 @@ export default function Me() {
 
 
       <Sticky>
-        <Cell>内容</Cell>
+        <Cell>我喜欢的</Cell>
       </Sticky>
-
-      <List
-      loading={loading}
-      hasMore={hasMore}
-      onLoad={() => {
-        setLoading(true)
-        setTimeout(() => {
-          for (let i = 0; i < 20; i++) {
-            const text = list.length + 1
-            list.push(text < 20 ? "0" + text : String(text))
-          }
-          setList([...list])
-          setHasMore(list.length < 40)
-          setLoading(false)
-        }, 100)
-      }}
-    >
-      {
-        //
-        list.map((item) => (
-          <Cell key={item}>{item}</Cell>
-        ))
-      }
-      <List.Placeholder>
-        {loading && <Loading>加载中...</Loading>}
-        {!hasMore && "没有更多了"}
-      </List.Placeholder>
-    </List>
       
+      <View>
+        <SongListFav
+            reload={reload}
+            user={user}
+        />
+      </View>
 
       <NCMiniPlayer />
       <NCPlaylist open={playlistOpen} onClose={togglePlaylist} />
-    </View>
+    </PullRefresh>
   );
 
 }
