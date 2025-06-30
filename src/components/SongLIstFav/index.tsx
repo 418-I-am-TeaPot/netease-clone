@@ -13,6 +13,7 @@ import Taro from "@tarojs/taro";
 
 export default function SongListFav(
     {
+        reload,
         user
     }
 ) {
@@ -61,7 +62,7 @@ export default function SongListFav(
         };
     
     useEffect(()=> {
-        requestWithLoading();},[]);
+        requestWithLoading();},[reload]);
 
     const [hasMore, setHasMore] = useState(true);
     let initItems: Song[];
