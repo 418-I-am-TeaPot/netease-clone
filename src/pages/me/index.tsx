@@ -1,18 +1,17 @@
 import { View } from "@tarojs/components";
-import Taro, { useLoad } from "@tarojs/taro";
+import Taro, { useDidShow, useLoad } from "@tarojs/taro";
 import "./index.scss";
-import { Flex,Image,List,Cell,Loading,Sticky } from "@taroify/core";
+import { Flex,Image,Cell,Sticky,PullRefresh } from "@taroify/core";
 import NCMiniPlayer from "@/components/NCMiniPlayer";
 import { usePlaylistStore } from "@/store/playlist";
 import NCPlaylist from "@/components/NCPlaylist";
 import SongListFav from "@/components/SongLIstFav";
 import { useState } from "react";
-import { Song } from "@/models/song";
+import { User } from "@/models/user";
+import { usePageScroll } from "@tarojs/taro";
 
 export default function Me() {
-  useLoad(() => {
-    console.log("Page loaded.");
-  });
+  const user: User = {openid: "123", name: "123", bio: "123", avatarUrl: "123", registeredAt: 123, gender: 1};
 
   const { playlistOpen, togglePlaylist } = usePlaylistStore();
 
@@ -20,34 +19,29 @@ export default function Me() {
     Taro.navigateTo({ url: "/pages/profile/index" });
   };
 
-    const [songs, setSongs] = useState<Song[]>([])
-    const [loading, setLoading] = useState<boolean>(false)
-  
     useLoad(() => {
       console.log("Page loaded.");
-      const loadSongs = () => { Taro.request({
-          url: 'http://localhost:8080/songs',
-          method: 'GET', 
-          success: (res) => {
-            console.log('Data:', res.data);
-            setSongs(res.data.data);
-            setLoading(true);
-          },
-          fail: (err) => {
-            console.error('Request failed:', err);
-            Taro.showToast({
-              title: '加载歌曲失败，请稍后重试',
-              icon: 'none',
-              duration: 2000,
-            });
-          }
-        });
-      }
-      loadSongs();
+    });
+
+    useDidShow(() => {
+      console.log("Page show.");
     });
   
+    const [pullLoading, setPullLoading] = useState(false)
+    const [reachTop, setReachTop] = useState(true)
+
+    usePageScroll(({ scrollTop }) => setReachTop(scrollTop === 0))
+
   return (
-    <View className="me">
+    <PullRefresh
+      loading = {pullLoading}
+      reachTop = {reachTop}
+      onRefresh={() => {
+        setPullLoading(true);
+        setTimeout(() => {
+          setPullLoading(false);
+        }, 1000)
+      }}>
         <View style={{ height: '20px' }} />
         <Flex justify="center">  
           <Flex.Item span={6}></Flex.Item>
@@ -73,15 +67,13 @@ export default function Me() {
       
       <View>
         <SongListFav
-          items={songs}
-          search={""}
-          loadStart={loading}
+            user={user}
         />
       </View>
 
       <NCMiniPlayer />
       <NCPlaylist open={playlistOpen} onClose={togglePlaylist} />
-    </View>
+    </PullRefresh>
   );
 
 }
