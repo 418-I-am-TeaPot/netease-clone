@@ -1,5 +1,5 @@
 import { Search } from "@taroify/core";
-import { View, ScrollView } from "@tarojs/components";
+import { View } from "@tarojs/components";
 import { useLoad } from "@tarojs/taro";
 import "./index.scss";
 import Taro from "@tarojs/taro";
@@ -9,10 +9,12 @@ import { usePlaylistStore } from "@/store/playlist";
 import SongListVertical from "@/components/SongLIstVertical";
 import SongListHorizental from "@/components/SongLIstHorizental";
 import { useState, useRef } from "react";
-import { useSearch } from "../search/useSearch"; 
-import { title } from "process";
+import { useSearch } from "../search/useSearch";
+import { User } from "@/models/user";
 
 export default function Index() {
+  const user: User = {openid: "123", name: "123", bio: "123", avatarUrl: "123", registeredAt: 123, gender: 1};
+
   useLoad(() => {
     console.log("Page loaded.");
   });
@@ -20,45 +22,6 @@ export default function Index() {
   const searchRef = useRef<any>(null);
 
   const { playlistOpen, togglePlaylist } = usePlaylistStore();
-
-  const items = [
-    {
-      imgUrl: "https://p1.music.126.net/FcsrgetFoSqZmxRjkBh6BA==/109951169522292175.jpg?param=200y200",
-      title: "Viyella's Memory",
-      artist: "123",
-      id: "123456"
-    },
-    {
-      imgUrl: "../../assets/icons/tab/vault.png",
-      title: "87654321",
-      artist: "321",
-      id: "1234567"
-    },
-    {
-      imgUrl: "../../assets/icons/tab/vault.png",
-      title: "87654321",
-      artist: "321",
-      id: "1234567"
-    },
-    {
-      imgUrl: "../../assets/icons/tab/vault.png",
-      title: "87654321",
-      artist: "321",
-      id: "1234567"
-    },
-    {
-      imgUrl: "../../assets/icons/tab/vault.png",
-      title: "87654321",
-      artist: "321",
-      id: "1234567"
-    },
-    {
-      imgUrl: "https://p1.music.126.net/FcsrgetFoSqZmxRjkBh6BA==/109951169522292175.jpg?param=200y200",
-      title: "87654321",
-      artist: "321",
-      id: "1234567"
-    }
-  ]
 
   const [showOverlay, setShowOverlay] = useState(false);
 
@@ -114,7 +77,7 @@ export default function Index() {
       
       <View>
         <SongListHorizental
-          items={items}
+          user={user}
         />
       </View>
 
@@ -126,8 +89,7 @@ export default function Index() {
         width: 90%;
         margin-left: 5%;">
         <SongListVertical
-          items={items}
-          search={""}
+          user = {user}
         />
       </View>
       <NCMiniPlayer />

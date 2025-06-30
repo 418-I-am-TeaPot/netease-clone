@@ -3,17 +3,74 @@ import { List, Loading } from "@taroify/core"
 import "./indexSLV.scss";
 import { useState, useEffect } from "react";
 import SongContainerVertical from "../SongContainerVertical";
+import { Song } from "@/models/song";
+import { usePlayerStore } from "@/store/player";
+import { usePlaylistStore } from "@/store/playlist";
+import { Toast } from "@taroify/core";
+import Taro from "@tarojs/taro";
 
 export default function SongListVertical(
     {
-        items,
-        search,
-        loadingMore = true
+        user,
+        search
     }
 ) {
-    const [hasMore, setHasMore] = useState(true)
-    const [list, setList] = useState<any>(items)
-    const [loading, setLoading] = useState(false)
+    const [items, setItems] = useState<Song[]>([])
+
+    console.log(search);
+    console.log(search == "" || search == undefined);
+
+    let url: String;
+    if(search == "" || search == undefined) {
+        url = 'http://localhost:8080/songs';
+    } else {
+        url = 'http://localhost:8080/songs/search?q=' + search;
+    }
+    console.log(url);
+
+    const requestWithLoading = async (url) => {
+            try {
+                Taro.showLoading({ 
+                title: '加载中', 
+                mask: true  // 添加遮罩防止触摸穿透
+                });
+        
+                const response = await Taro.request({
+                    url: url,
+                    method: 'GET', 
+                    success: (res) => {
+                        console.log('Data:', res.data);
+                        setItems(res.data.data);
+                    },
+                    fail: (err) => {
+                        console.error('Request failed:', err);
+                        Taro.showToast({
+                            title: '加载歌曲失败，请稍后重试',
+                            icon: 'none',
+                            duration: 2000,
+                        });
+                    }
+                });
+                return response;
+            } catch (error) {
+                console.error('Request error:', error);
+                throw error;
+            } finally {
+                Taro.hideLoading();
+            }
+        };
+
+    useEffect(()=> {
+        requestWithLoading(url);},[search]);
+    
+    const [hasMore, setHasMore] = useState(true);
+    let initItems: Song[];
+    if(items.length < 10)
+        initItems = items;
+    else
+        initItems = items.slice(0, 10);
+    const [list, setList] = useState<Song[]>(initItems);
+    const [loading, setLoading] = useState(false);
     const [showLoading, setShowLoading] = useState(true);
     
     // 当没有更多数据时显示，2秒后自动隐藏
@@ -22,9 +79,38 @@ export default function SongListVertical(
             const timer = setTimeout(() => {
                 setShowLoading(false);
             }, 1000);
-            return () => clearTimeout(timer); // 清除定时器
+            return () => clearTimeout(timer);
         }
     }, [hasMore]);
+
+    const {playlistData, setPlaylistData, currentItemIndex, setCurrentItemIndex} = usePlaylistStore();
+    const {setSong, currentSong, playing} = usePlayerStore();
+
+    const handleItemClick = (song: Song) => {
+        if(currentSong?.songId == song.songId) {
+            Toast.open("歌曲已在播放");
+            return;
+        }
+        let playlist: Song[] = playlistData;
+        console.log(playlistData);
+        console.log("currentItemIndex:" + currentItemIndex);
+        console.log("currentSong:" + (currentSong?currentSong.name:undefined));
+        console.log("playing:" + playing);
+        let flag = false;
+        for (let i = 0; i < playlistData.length; i++) {
+            if (playlistData[i].songId == song.songId) {
+                setCurrentItemIndex(i);
+                flag = true;
+                break;
+            }
+        }
+        if(!flag) {
+            playlist.splice(currentItemIndex + 1, 0, song);
+            setCurrentItemIndex(currentItemIndex + 1);
+        }
+        setPlaylistData(playlist);
+        setSong(song);
+    }
 
   return (
     <View style="
@@ -35,32 +121,29 @@ export default function SongListVertical(
         <List style="
             width: 100%;
             flex: 1;"
-            loading={loading && loadingMore}
-            hasMore={hasMore && loadingMore}
+            loading={loading}
+            hasMore={hasMore}
             onLoad={() => {
-                if(!loadingMore) return;
                 setLoading(true)
                 setTimeout(() => {
-                for (let i = 0; i < 10; i++) {
-                    list.push({
-                        imgUrl: "../../assets/icons/tab/vault.png",
-                        title: "12345678",
-                        artist: "123",
-                        id: "123456"
-                    })
+                let length = list.length;
+                for (let i = length; i < (items.length<length+10 ? items.length:length+10); i++) {
+                    list.push(items[list.length])
                 }
                 setList([...list])
-                setHasMore(list.length < 40)
+                setHasMore(list.length < items.length)
                 setLoading(false)
                 }, 1000)
             }}
         >
             {
-                list.map((item, index) => (
+                list.map((item) => (
                     <SongContainerVertical
-                        imgUrl={item.imgUrl}
-                        title={item.title}
-                        artist={item.artist}
+                        imgUrl={item.coverUrl}
+                        title={item.name}
+                        artist={item.artists}
+                        isLike={item.isLike}
+                        onClick={() => handleItemClick(item)}
                     />
                 ))
             }

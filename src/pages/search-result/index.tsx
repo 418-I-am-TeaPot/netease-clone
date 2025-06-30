@@ -5,12 +5,15 @@ import { useSearch } from "../search/useSearch";
 import { useState, useRef } from "react";
 import "./index.scss";
 import SongListVertical from "@/components/SongLIstVertical";
+import NCMiniPlayer from "@/components/NCMiniPlayer";
+import NCPlaylist from "@/components/NCPlaylist";
+import { usePlaylistStore } from "@/store/playlist";
+import { User } from "@/models/user";
 
 export default function SearchResult() {
-  const [items, setItems] = useState<{id:string, artist:string, title: string, imgUrl: string}[]>([]);
+  const user: User = {openid: "123", name: "123", bio: "123", avatarUrl: "123", registeredAt: 123, gender: 1};
+  
   const [searchKey, setSearchKey] = useState<string>("");
-  const [resultNum, setResultNum] = useState<number>(0);
-  const [loading, setLoading] = useState(false);
 
   const searchRef = useRef<any>(null);
 
@@ -19,47 +22,6 @@ export default function SearchResult() {
     Taro.setNavigationBarTitle({ title: options.q });
     setSearchKey(options.q);
     setTextInput(options.q);
-    const newItem = [
-    {
-      imgUrl: "https://p1.music.126.net/FcsrgetFoSqZmxRjkBh6BA==/109951169522292175.jpg?param=200y200",
-      title: "Viyella's Memory",
-      artist: "123",
-      id: "123456"
-    },
-    {
-      imgUrl: "../../assets/icons/tab/vault.png",
-      title: "87654321",
-      artist: "321",
-      id: "1234567"
-    },
-    {
-      imgUrl: "../../assets/icons/tab/vault.png",
-      title: "87654321",
-      artist: "321",
-      id: "1234567"
-    },
-    {
-      imgUrl: "../../assets/icons/tab/vault.png",
-      title: "87654321",
-      artist: "321",
-      id: "1234567"
-    },
-    {
-      imgUrl: "../../assets/icons/tab/vault.png",
-      title: "87654321",
-      artist: "321",
-      id: "1234567"
-    },
-    {
-      imgUrl: "https://p1.music.126.net/FcsrgetFoSqZmxRjkBh6BA==/109951169522292175.jpg?param=200y200",
-      title: "87654321",
-      artist: "321",
-      id: "1234567"
-    }
-    ]
-    setItems(newItem)
-    setResultNum(newItem.length);
-    setLoading(true);
   });
 
   const [showOverlay, setShowOverlay] = useState(false);
@@ -91,6 +53,8 @@ export default function SearchResult() {
       searchRef.current.clear();
     }
   }
+
+  const { playlistOpen, togglePlaylist } = usePlaylistStore();
     
   return (
     <View>
@@ -111,18 +75,19 @@ export default function SearchResult() {
         </View>
       )}
 
-      {loading && <View className="resultNum">
-        搜索到{resultNum}个结果
-      </View>}
-      {loading && <View style="
+      <View className="resultNum">
+      </View>
+       <View style="
         width: 90%;
         margin-left: 5%;">
           <SongListVertical
-            items={items}
+            user={user}
             search={searchKey}
-            loadingMore={false}
           />
-      </View>}
+      </View>
+      <NCMiniPlayer />
+      <NCPlaylist open={playlistOpen} onClose={togglePlaylist} />
     </View>
+    
   );
 }
