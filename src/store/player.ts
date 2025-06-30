@@ -2,17 +2,8 @@ import { Song } from "@/models/song";
 import Taro from "@tarojs/taro";
 import { InnerAudioContext } from "@tarojs/taro";
 import { create } from "zustand";
+
 const innerAudioContext = Taro.createInnerAudioContext();
-innerAudioContext.src = "";
-innerAudioContext.onPlay(() => {
-  console.log("开始播放");
-});
-innerAudioContext.onPause(() => {
-  console.log("暂停播放");
-});
-innerAudioContext.onError((res) => {
-  console.log(res);
-});
 
 interface PlayerState {
   currentSong: Song | null;
@@ -24,20 +15,52 @@ interface PlayerState {
   player: InnerAudioContext | null;
   isLike: boolean;
   setIsLike: () => void;
+  currentTime: number;
+  setCurrentTime: (time: number) => void;
 }
 
-export const usePlayerStore = create<PlayerState>((set, get) => ({
-  currentSong: null,
-  playing: false,
-  setSong: (song) =>
-    set({
-      currentSong: song,
-      playing: true,
-    }),
-  togglePlay: () => set((state) => ({ playing: !state.playing })),
-  pause: () => set({ playing: false }),
-  resume: () => set({ playing: true }),
-  player: innerAudioContext || null,
-  isLike: false,
-  setIsLike: () => set((state) => ({ isLike: !state.isLike })),
-}));
+export const usePlayerStore = create<PlayerState>((set, get) => {
+  const player = innerAudioContext;
+
+  player.onPlay(() => {
+    console.log("开始播放");
+  });
+  player.onPause(() => {
+    console.log("暂停播放");
+  });
+  player.onError((res) => {
+    console.log(res);
+  });
+  // 时间更新：设置 currentTime 全局状态
+  player.onTimeUpdate(() => {
+    set({ currentTime: player.currentTime });
+  });
+  // 用于调试：自动播放
+  player.onCanplay(() => {
+    //player.play();
+    //set({ playing: true });
+  });
+
+  return {
+    player,
+    currentSong: null,
+    playing: false,
+    setSong: (song) => {
+      player.src = `http://music.163.com/song/media/outer/url?id=${song.songId}.mp3`; // 设置播放器音频源
+      return set({ currentSong: song, currentTime: 0 });
+    },
+    togglePlay: () => set((state) => ({ playing: !state.playing })),
+    pause: () => {
+      player.pause();
+      return set({ playing: false });
+    },
+    resume: () => {
+      player.play();
+      return set({ playing: true });
+    },
+    isLike: false,
+    setIsLike: () => set((state) => ({ isLike: !state.isLike })),
+    currentTime: 0,
+    setCurrentTime: (time) => set({ currentTime: time }),
+  };
+});

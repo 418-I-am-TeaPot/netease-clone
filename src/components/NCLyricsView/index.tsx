@@ -12,10 +12,10 @@ import { Divider } from "@taroify/core";
 import { useLyrics } from "./useLyrics";
 import { formatSecondsToMMSS } from "@/utils/time";
 import { debounce } from "lodash";
+import { usePlayerStore } from "@/store/player";
 
 function NCLyricsView() {
   const [scrollTop, setScrollTop] = useState(0);
-  const [currentTime, setCurrentTime] = useState(1);
   const [centerIndicatorVisible, setCenterIndicatorVisible] = useState(true);
   const {
     lyricsLines,
@@ -25,16 +25,18 @@ function NCLyricsView() {
     centeredLineIndex,
     setCenteredLineIndex,
   } = useLyrics();
-
-  // useEffect(() => {
-  //   setInterval(() => {
-  //     setCurrentTime((prev) => prev + 1);
-  //   }, 1000);
-  // }, []);
+  const { currentTime } = usePlayerStore();
 
   const isScrollingRef = useRef<boolean>(false);
 
-  // 当播放时间(currentTime)发生变化时
+  // 监听：中线可见性 (centerIndicatorVisible)
+  // 功能：实现歌词自动吸附
+  useEffect(() => {
+    if (!centerIndicatorVisible) scrollToLine(centeredLineIndex);
+  }, [centerIndicatorVisible]);
+
+  // 监听：歌曲进度 (currentTime)
+  // 功能：实现歌词自动滚动
   useEffect(() => {
     if (!lyricsLines.length || !lyricsDimensions.length) return;
     const newActiveLineIndex = findMatchingLine(); // 找到与时间匹配的歌词行
@@ -42,15 +44,14 @@ function NCLyricsView() {
     scrollToLine(newActiveLineIndex); // 滚动到定位到的歌词行
   }, [currentTime, lyricsLines, lyricsDimensions]);
 
+  // 监听：活跃歌词行下标 (activeLineIndex)
+  // 功能：滚动到用户点击的歌词行 - 对应 seekToLine 函数
   useEffect(() => {
     if (!lyricsLines.length || !lyricsDimensions.length) return;
     scrollToLine(activeLineIndex); // 滚动到定位到的歌词行
   }, [activeLineIndex, lyricsLines, lyricsDimensions]);
 
-  useEffect(() => {
-    if (!centerIndicatorVisible) scrollToLine(centeredLineIndex);
-  }, [centerIndicatorVisible]);
-
+  // 响应用户拖动歌词的事件
   const handleScroll = (e: BaseEventOrig<ScrollViewProps.onScrollDetail>) => {
     if (!isScrollingRef.current) {
       isScrollingRef.current = true;
@@ -66,6 +67,7 @@ function NCLyricsView() {
     });
   };
 
+  // 使用防抖来模拟 onScrollEnd API
   const debouncedOnScrollEnd = useMemo(
     () =>
       debounce(() => {
@@ -78,22 +80,26 @@ function NCLyricsView() {
   // 活跃歌词行变化时，滚动到该歌词行
   const scrollToLine = (index: number) => {
     const { top, height } = lyricsDimensions[index];
-    const newScrollTop = top + height / 2 - 1;
+    const newScrollTop = top + height / 2 + 15;
     setScrollTop(newScrollTop);
   };
 
-  const findMatchingLine = () =>
-    lyricsLines.findIndex((lyricLine, index, arr) => {
+  // currentTime变化时，找到当前正在播放的歌词index
+  const findMatchingLine = () => {
+    return lyricsLines.findIndex((lyricLine, index, arr) => {
       const thisLineTime = lyricLine.time;
       const nextLineTime = arr[index + 1].time;
       return thisLineTime <= currentTime && currentTime < nextLineTime;
     });
+  };
 
+  // 找到用户点击的歌词行，并将其设置为活跃状态
   const seekToLine = (index: number) => {
     console.log(index);
     setActiveLineIndex(index);
   };
 
+  // 获取歌词的「文本」样式
   const getLineTextStyle = (index: number): string => {
     const textStyle: string[] = ["lyric-text"];
     if (index === activeLineIndex) textStyle.push("lyric-text-active");
@@ -102,35 +108,18 @@ function NCLyricsView() {
     return textStyle.join(" ");
   };
 
+  // 获取歌词的「背景」样式
   const getLineBgStyle = (index: number): string => {
     const bgStyle = ["lyric-line"];
 
-    if (centeredLineIndex === index)
-      console.log(
-        `centeredLineIndex: ${centeredLineIndex}; isScrolling: ${isScrollingRef.current}; centerIndicatorVisible: ${centerIndicatorVisible}`
-      );
-
-    if (
-      centeredLineIndex === index &&
-      isScrollingRef.current === false &&
-      centerIndicatorVisible
-    ) {
-      console.log("here");
-      bgStyle.push("lyric-line-active");
-    }
+    if (centeredLineIndex === index) bgStyle.push("lyric-line-active");
 
     return bgStyle.join(" ");
   };
 
   return (
-    <View className="lyrics-view container-h" style={{ zIndex: 6 }}>
-      <View
-        className="center-indicator container-h"
-        style={{
-          opacity: isScrollingRef.current ? 1 : 0,
-          transition: "opacity 0.3s ease",
-        }}
-      >
+    <View className="lyrics-view container-h">
+      <View className="center-indicator container-h">
         <Text style={{ fontSize: "12px", color: "rgba(255, 255, 255, 0.5)" }}>
           {formatSecondsToMMSS(lyricsLines[centeredLineIndex]?.time) ?? "xx:xx"}
         </Text>

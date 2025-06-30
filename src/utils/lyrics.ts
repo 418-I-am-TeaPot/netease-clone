@@ -4,13 +4,8 @@ export type LyricLine = {
 };
 
 export const lrcParser = (lyrics: string) => {
-  const [contributor, ...lines] = lyrics.split("\n");
-  const lyricLines: LyricLine[] = [
-    {
-      time: 0,
-      text: contributor.slice(1, contributor.length - 1),
-    },
-  ];
+  const lines = lyrics.split("\n");
+  const lyricLines: LyricLine[] = [];
   for (const line of lines) {
     const match = line.match(/\[(\d+):(\d+\.\d+)\](.*)/);
     if (match) {
@@ -22,6 +17,6 @@ export const lrcParser = (lyrics: string) => {
       });
     }
   }
-  console.log(lyricLines);
-  return { contributor, lyricLines };
+  console.log("lyricLines", lyricLines);
+  return lyricLines;
 };
