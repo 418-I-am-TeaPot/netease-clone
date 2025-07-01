@@ -1,9 +1,10 @@
 import { View } from "@tarojs/components";
 import Taro, { useDidShow, useLoad } from "@tarojs/taro";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { User } from "@/models/user";
 import {Button} from "@taroify/core";
 import { useUserStore } from "@/store/user";
+import { BASE_URL } from "@/service/config";
 
 export default function Profile() {
   useLoad(() => {
@@ -18,9 +19,61 @@ export default function Profile() {
   gender: 0,
   registeredAt: 1751273205
 }
-    const{user,setUser} =useUserStore();
+  const{user,setUser} =useUserStore();
   
   const [openid,setopenid]=useState("")
+
+/*   useEffect(() => {
+    console.log("Updated user:", user);
+    
+  }, [user]); */
+
+  const getInfo = async (id)=>{
+        const userInfo= await Taro.request({
+            url: BASE_URL+'/user',
+            method: 'GET',
+            header:{
+              'openid':id
+            },
+            data: {
+        },
+        success:function (res){
+          console.log("res.data",res.data.data)
+            setUser(res.data.data)
+            
+            console.log(user)
+
+            Taro.navigateBack()
+        },
+        fail:  err => {
+          console.error('请求openid失败:', err.errMsg);
+        }
+        })
+  }
+
+  const createAccount = async (id)=>{
+    const res = await Taro.request({
+            url: BASE_URL+'/user',
+            method: 'POST',
+            header:{
+              openid:id
+            },
+            data: {
+        },
+        success:function (res){
+            console.log(res)
+            if(res.data.data=="用户已存在")
+            {
+              console.log("用户已存在")
+            }
+            getInfo(id)
+
+        },
+        fail:  err => {
+          console.error('请求用户状态失败:', err.errMsg);
+        }
+        })
+  }
   
   const handlelogin = async ()=>{
     try {
@@ -37,24 +90,15 @@ export default function Profile() {
             grant_type: 'authorization_code'
         },
         success:function (res){
-            console.log("asdfasdf")
-            // Taro.navigateBack()
-
-            console.log(res.data)
-            setopenid(res.data.openid)
-
-            defaultUser.openid=res.data.openid
-            defaultUser.name=res.data.openid
-            setUser(defaultUser)
+            createAccount(res.data.openid)
             
-            Taro.navigateBack()
         },
         fail:  err => {
-          console.error('请求失败:', err.errMsg);
+          console.error('请求openid失败:', err.errMsg);
         }
         })
     } catch (error) {
-        console.error('获取 openid 失败:', error);
+        console.error('获取用户信息失败:', error);
     }
     
   }
