@@ -190,6 +190,10 @@ export default function SongListFav({ reload, user }) {
     }
     playlist.splice(currentIndex + 1, 0, song);
     setPlaylistData(playlist);
+    if (playlist.length == 1) {
+      setSong(popupSong);
+      resume();
+    }
     setIsPopupVisible(false);
   };
 
