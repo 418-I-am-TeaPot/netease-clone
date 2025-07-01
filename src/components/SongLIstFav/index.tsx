@@ -134,11 +134,11 @@ export default function SongListFav({ reload, user }) {
     currentItemIndex,
     setCurrentItemIndex,
   } = usePlaylistStore();
-  const { setSong, currentSong, playing, setIsLike, isLike } = usePlayerStore();
+  const { setSong, currentSong, resume, setIsLike, isLike } = usePlayerStore();
 
   const handleItemClick = (song: Song) => {
     if (currentSong?.songId == song.songId) {
-      Toast.open("歌曲已在播放");
+      Taro.navigateTo({ url: "/pages/player/index" });
       return;
     }
     let playlist: Song[] = playlistData;
@@ -156,6 +156,8 @@ export default function SongListFav({ reload, user }) {
     }
     setPlaylistData(playlist);
     setSong(song);
+    resume();
+    Taro.navigateTo({ url: "/pages/player/index" });
   };
 
   const handleItemIconClick = (

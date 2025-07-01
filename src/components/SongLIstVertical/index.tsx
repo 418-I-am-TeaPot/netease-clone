@@ -101,11 +101,11 @@ export default function SongListVertical({ user, search, useSearch = false }) {
     currentItemIndex,
     setCurrentItemIndex,
   } = usePlaylistStore();
-  const { setSong, currentSong, playing } = usePlayerStore();
+  const { setSong, currentSong, resume } = usePlayerStore();
 
   const handleItemClick = (song: Song) => {
     if (currentSong?.songId == song.songId) {
-      Toast.open("歌曲已在播放");
+      Taro.navigateTo({ url: "/pages/player/index" });
       return;
     }
     let playlist: Song[] = playlistData;
@@ -123,6 +123,8 @@ export default function SongListVertical({ user, search, useSearch = false }) {
     }
     setPlaylistData(playlist);
     setSong(song);
+    resume();
+    if (useSearch) Taro.navigateTo({ url: "/pages/player/index" });
   };
 
   if (!items || items == undefined || items.length == 0)
