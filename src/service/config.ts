@@ -1,1 +1,3 @@
-export const BASE_URL = "http://10.249.89.31:8080";
+export const BASE_URL = "";
+export const APP_ID = "";
+export const APP_SECRET = "";

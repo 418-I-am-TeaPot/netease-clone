@@ -1,6 +1,6 @@
 import { Search } from "@taroify/core";
 import { View } from "@tarojs/components";
-import { useLoad } from "@tarojs/taro";
+import { useDidShow, useLoad } from "@tarojs/taro";
 import "./index.scss";
 import Taro from "@tarojs/taro";
 import NCMiniPlayer from "@/components/NCMiniPlayer";
@@ -10,26 +10,26 @@ import SongListVertical from "@/components/SongLIstVertical";
 import SongListHorizental from "@/components/SongLIstHorizental";
 import { useState, useRef, useEffect } from "react";
 import { useSearch } from "../search/useSearch";
-import { User } from "@/models/user";
 import { useUserStore } from "@/store/user";
 import { PullRefresh } from "@taroify/core";
 import { usePageScroll } from "@tarojs/taro";
 
 export default function Index() {
-  const { user } = useUserStore();
-
-  const [ loadStart, setLoadStart] = useState(false);
-
-
-  useEffect(() => {
-    if(user) {
-      setLoadStart(true);
-    }
-  },[user]);
-
   useLoad(() => {
     console.log("Page loaded.");
   });
+  const { user } = useUserStore();
+  const [loadStart, setLoadStart] = useState(false);
+
+  useDidShow(() => {
+    if (!user) Taro.navigateTo({ url: "/pages/login/index" });
+  });
+
+  useEffect(() => {
+    if (user) {
+      setLoadStart(true);
+    }
+  }, [user]);
 
   const searchRef = useRef<any>(null);
 
@@ -55,74 +55,72 @@ export default function Index() {
   const { textInput, setTextInput } = useSearch();
 
   const handleSearch = () => {
-      Taro.navigateTo({ url: `/pages/search-result/index?q=${textInput}` });
-    };
+    Taro.navigateTo({ url: `/pages/search-result/index?q=${textInput}` });
+  };
 
   const handleCancel = (e) => {
     if (searchRef.current) {
       searchRef.current.clear();
     }
-  }
+  };
 
-  const [pullLoading, setPullLoading] = useState(false)
-  const [reachTop, setReachTop] = useState(true)
-  const [reload, setReload] = useState(true)
-  
-  usePageScroll(({ scrollTop }) => setReachTop(scrollTop === 0))
-  
+  const [pullLoading, setPullLoading] = useState(false);
+  const [reachTop, setReachTop] = useState(true);
+  const [reload, setReload] = useState(true);
+
+  usePageScroll(({ scrollTop }) => setReachTop(scrollTop === 0));
+
   return (
     <PullRefresh
-      loading = {pullLoading}
-      reachTop = {reachTop}
+      loading={pullLoading}
+      reachTop={reachTop}
       onRefresh={() => {
         console.log(reload);
         setPullLoading(true);
         setReload(!reload);
         setTimeout(() => {
           setPullLoading(false);
-        }, 1000)
-      }}>
-      <Search className="searchIndex" placeholder="搜索曲目" 
+        }, 1000);
+      }}
+    >
+      <Search
+        className="searchIndex"
+        placeholder="搜索曲目"
         onClick={handleSearchClick}
         value={textInput}
         onChange={(e) => setTextInput(e.detail.value)}
         onSearch={handleSearch}
-        onCancel={handleCancel}/>
+        onCancel={handleCancel}
+      />
 
       {showOverlay && (
-        <View 
-          className='overlayIndex' 
+        <View
+          className="overlayIndex"
           onClick={handleOverlayClick}
           onTouchMove={handleTouchMove}
           catchMove
-        >
+        ></View>
+      )}
+
+      <View className="recommendTitle">{"推荐曲目"}</View>
+
+      {loadStart && (
+        <View>
+          <SongListHorizental user={user} reload={reload} />
         </View>
       )}
 
-      <View className="recommendTitle">
-        {"推荐曲目"}
-      </View>
-      
-      {loadStart && <View>
-        <SongListHorizental
-          user={user}
-          reload={reload}
-        />
-      </View>}
+      <View className="liberaryTitle">{"全部歌曲"}</View>
 
-      <View className="liberaryTitle">
-        {"全部歌曲"}
-      </View>
-
-      {loadStart && <View style="
+      {loadStart && (
+        <View
+          style="
         width: 90%;
-        margin-left: 5%;">
-        <SongListVertical
-          user = {user}
-          search= {""}
-          reload={reload}
-        />
-      </View>}
+        margin-left: 5%;"
+        >
+          <SongListVertical user={user} search={""} reload={reload} />
+        </View>
+      )}
       {loadStart && <NCMiniPlayer />}
       <NCPlaylist open={playlistOpen} onClose={togglePlaylist} />
     </PullRefresh>

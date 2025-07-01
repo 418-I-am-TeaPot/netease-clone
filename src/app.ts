@@ -15,15 +15,11 @@ function App({ children }: PropsWithChildren<any>) {
 
   const { setSong } = usePlayerStore();
   const { playlistData, setPlaylistData } = usePlaylistStore();
-  const {user} = useUserStore()
+  const { user } = useUserStore();
 
-  useEffect(()=> {
-    console.log("user state",user)
-    if(!user) {
-      console.log('jhere')
-      Taro.navigateTo({'url':'pages/login/index'})
-    }
-  },[user])
+  useEffect(() => {
+    if (!user) Taro.navigateTo({ url: "/pages/login/index" });
+  }, [user]);
 
   // 初始化播放列表
   useEffect(() => {
