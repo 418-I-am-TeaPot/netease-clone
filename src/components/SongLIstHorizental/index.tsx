@@ -60,7 +60,7 @@ export default function SongListHorizental({ user }) {
 
   const handleItemClick = (song: Song) => {
     if (currentSong?.songId == song.songId) {
-      Toast.open("歌曲已在播放");
+      Taro.navigateTo({ url: "/pages/player/index" });
       return;
     }
     let playlist: Song[] = playlistData;
