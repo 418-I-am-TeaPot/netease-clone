@@ -26,6 +26,7 @@ export default function Me() {
 
     useDidShow(() => {
       console.log("Page show.");
+      setReload(!reload);
     });
   
     const [pullLoading, setPullLoading] = useState(false)
@@ -69,7 +70,10 @@ export default function Me() {
         <Cell>我喜欢的</Cell>
       </Sticky>
       
-      <View>
+      <View style= {{
+        minHeight: 400,
+        backgroundColor: "white"
+      }}>
         <SongListFav
             reload={reload}
             user={user}
