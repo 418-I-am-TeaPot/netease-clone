@@ -17,7 +17,7 @@ export const usePlaylistStore = create<PlaylistState>((set, get) => ({
   togglePlaylist: () => set((state) => ({ playlistOpen: !state.playlistOpen })),
   playlistData: [],
   setPlaylistData: (playlist) => set({ playlistData: playlist }),
-  currentItemIndex: 0,
+  currentItemIndex: -1,
   setCurrentItemIndex: (newIndex) => set({ currentItemIndex: newIndex }),
   playPrevSong: () => {
     const { playlistData, currentItemIndex } = get();

@@ -23,8 +23,7 @@ function App({ children }: PropsWithChildren<any>) {
 
   // 播放列表有数据之后，将播放列表的第一首歌设置为 currentSong
   useEffect(() => {
-    if (!playlistData.length) return;
-    setSong(playlistData[0]);
+    if (!playlistData.length) setSong(playlistData[0]);
   }, [playlistData]);
 
   // children 是将要会渲染的页面
