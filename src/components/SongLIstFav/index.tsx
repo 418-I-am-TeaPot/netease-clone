@@ -206,17 +206,17 @@ export default function SongListFav({ reload, user }) {
     });
   };
 
-  if (!items || items == undefined || items.length == 0) return;
-  <View
-    style="
-            width: 100%;
-            margin-top: 40px;
-            text-align: center;
-            font-size: 50px;
-            color: #444444;"
-  >
-    {"没有喜欢的歌曲"}
-  </View>;
+  if (!items || items == undefined || items.length == 0) 
+    return (
+      <View style={{
+        width: "100%",
+        paddingTop: 20,
+        fontSize: 20,
+        color: "#444444",
+        textAlign: "center"
+      }}>
+        {"还没有喜欢的歌曲"}
+      </View>);
 
   return (
     <View

@@ -9,9 +9,12 @@ import NCMiniPlayer from "@/components/NCMiniPlayer";
 import NCPlaylist from "@/components/NCPlaylist";
 import { usePlaylistStore } from "@/store/playlist";
 import { User } from "@/models/user";
+import { useUserStore } from "@/store/user";
+import { PullRefresh } from "@taroify/core";
+import { usePageScroll } from "@tarojs/taro";
 
 export default function SearchResult() {
-  const user: User = {openid: "1", name: "alan", bio: "我是alan", avatarUrl: "syljbh00m.hd-bkt.clouddn.com/8ae0c571-e5dc-41a2-a534-ba653c54bb75.jpg", registeredAt: 1751163646102, gender: 1};
+  const { user } = useUserStore();
 
   const [searchKey, setSearchKey] = useState<string>("");
 
@@ -57,8 +60,24 @@ export default function SearchResult() {
 
   const { playlistOpen, togglePlaylist } = usePlaylistStore();
     
+  const [pullLoading, setPullLoading] = useState(false)
+  const [reachTop, setReachTop] = useState(true)
+  const [reload, setReload] = useState(true)
+  
+  usePageScroll(({ scrollTop }) => setReachTop(scrollTop === 0))
+  
   return (
-    <View>
+    <PullRefresh
+      loading = {pullLoading}
+      reachTop = {reachTop}
+      onRefresh={() => {
+        console.log(reload);
+        setPullLoading(true);
+        setReload(!reload);
+        setTimeout(() => {
+          setPullLoading(false);
+        }, 1000)
+      }}>
       <Search className="searchSR" placeholder="搜索曲目" 
         onClick={handleSearchClick}
         value={textInput}
@@ -85,11 +104,23 @@ export default function SearchResult() {
             user={user}
             search={searchKey}
             useSearch={true}
+            reload={reload}
           />
-      </View>
-      <NCMiniPlayer />
-      <NCPlaylist open={playlistOpen} onClose={togglePlaylist} />
-    </View>
+      </View> 
+      {/* <View style={{
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        width: "100%",
+        height: 100,
+        marginBottom: 50,
+        paddingBottom: 50,
+        backgroundColor: "black"
+      }}> */}
+        <NCMiniPlayer />
+        <NCPlaylist open={playlistOpen} onClose={togglePlaylist} />
+      {/* </View> */}
+    </PullRefresh>
     
   );
 }
