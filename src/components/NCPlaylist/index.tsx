@@ -17,8 +17,9 @@ function NCPlaylist({ open, onClose }: NCPlaylistProps) {
     setCurrentItemIndex,
     playlistData,
     setPlaylistData,
+    togglePlaylist,
   } = usePlaylistStore();
-  const { setSong, playing, resume } = usePlayerStore();
+  const { setSong, playing, resume, setPlaying } = usePlayerStore();
 
   const handleItemSelect = (index: number) => {
     setCurrentItemIndex(index);
@@ -29,6 +30,11 @@ function NCPlaylist({ open, onClose }: NCPlaylistProps) {
   const handleItemRemove = (index: number) => {
     const newPlaylistData = playlistData.filter((_, idx) => idx !== index);
     setPlaylistData(newPlaylistData);
+    if (!newPlaylistData.length) {
+      setSong(null);
+      setPlaying(false);
+      togglePlaylist();
+    }
   };
 
   return (

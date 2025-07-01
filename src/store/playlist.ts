@@ -21,29 +21,32 @@ export const usePlaylistStore = create<PlaylistState>((set, get) => ({
   setCurrentItemIndex: (newIndex) => set({ currentItemIndex: newIndex }),
   playPrevSong: () => {
     const { playlistData, currentItemIndex } = get();
-    const player = usePlayerStore.getState();
+    const playerStore = usePlayerStore.getState();
 
-    player.setCanPlay(false);
+    playerStore.setCanPlay(false);
+    playerStore.player?.stop();
 
     const newIndex =
       currentItemIndex === 0 ? playlistData.length - 1 : currentItemIndex - 1;
     set({ currentItemIndex: newIndex });
     const prevSong = playlistData[newIndex];
 
-    player.setSong(prevSong);
-    player.resume();
+    playerStore.setSong(prevSong);
+    playerStore.player?.seek(0);
+    playerStore.resume();
   },
   playNextSong: () => {
     const { playlistData, currentItemIndex } = get();
-    const player = usePlayerStore.getState();
+    const playerStore = usePlayerStore.getState();
 
-    player.setCanPlay(false);
+    playerStore.setCanPlay(false);
 
     const newIndex = (currentItemIndex + 1) % playlistData.length;
     set({ currentItemIndex: newIndex });
     const nextSong = playlistData[newIndex];
 
-    player.setSong(nextSong);
-    player.resume();
+    playerStore.setSong(nextSong);
+    playerStore.player?.seek(0);
+    playerStore.resume();
   },
 }));
