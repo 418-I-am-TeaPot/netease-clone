@@ -29,8 +29,7 @@ function NCLyricsView({ showLyricsCb }: NCLyricsViewProps) {
     centeredLineIndex,
     setCenteredLineIndex,
   } = useLyrics();
-  const { currentTime, setCurrentTime, player, currentSong, playing, resume } =
-    usePlayerStore();
+  const { currentTime, setCurrentTime, player, currentSong } = usePlayerStore();
 
   const isScrollingRef = useRef<boolean>(false);
 
@@ -115,7 +114,6 @@ function NCLyricsView({ showLyricsCb }: NCLyricsViewProps) {
     const newTime = lyricsLines[index].time;
     setCurrentTime(newTime);
     player?.seek(newTime);
-    if (!playing) resume();
   };
 
   // 获取歌词的「文本」样式
