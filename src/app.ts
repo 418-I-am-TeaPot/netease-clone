@@ -14,17 +14,12 @@ function App({ children }: PropsWithChildren<any>) {
   });
 
   const { setSong } = usePlayerStore();
-  const { playlistData, setPlaylistData } = usePlaylistStore();
+  const { playlistData } = usePlaylistStore();
   const { user } = useUserStore();
 
   useEffect(() => {
     if (!user) Taro.navigateTo({ url: "/pages/login/index" });
   }, [user]);
-
-  // 初始化播放列表
-  useEffect(() => {
-    setPlaylistData(MOCK_SONGS);
-  }, []);
 
   // 播放列表有数据之后，将播放列表的第一首歌设置为 currentSong
   useEffect(() => {
