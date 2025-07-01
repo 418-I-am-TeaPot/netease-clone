@@ -6,13 +6,15 @@ import NCMiniPlayer from "@/components/NCMiniPlayer";
 import { usePlaylistStore } from "@/store/playlist";
 import NCPlaylist from "@/components/NCPlaylist";
 import SongListFav from "@/components/SongLIstFav";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { User } from "@/models/user";
 import { usePageScroll } from "@tarojs/taro";
+import { useUserStore } from "@/store/user";
+import { BASE_URL } from "@/service/config";
 
 export default function Me() {
-  const user: User = {openid: "1", name: "alan", bio: "我是alan", avatarUrl: "syljbh00m.hd-bkt.clouddn.com/8ae0c571-e5dc-41a2-a534-ba653c54bb75.jpg", registeredAt: 1751163646102, gender: 1};
-
+  //const user: User = {openid: "1", name: "alan", bio: "我是alan", avatarUrl: "syljbh00m.hd-bkt.clouddn.com/8ae0c571-e5dc-41a2-a534-ba653c54bb75.jpg", registeredAt: 1751163646102, gender: 1};
+  const {user, setUser} = useUserStore()
   const { playlistOpen, togglePlaylist } = usePlaylistStore();
 
   const editProfile = () => {
@@ -33,6 +35,10 @@ export default function Me() {
 
     usePageScroll(({ scrollTop }) => setReachTop(scrollTop === 0))
 
+    useEffect(()=> {
+      console.log("user avatar",user?.avatarUrl)
+    },[user])
+
   return (
     <PullRefresh
       loading = {pullLoading}
@@ -50,7 +56,7 @@ export default function Me() {
           <Flex.Item span={6}></Flex.Item>
           <Flex.Item span={6}>
             <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <Image shape="circle" width={200} height={200} src="https://img.yzcdn.cn/vant/cat.jpeg" onClick={editProfile}/>
+              <Image shape="circle" width={200} height={200} src={user?.avatarUrl} onClick={editProfile}/>
             </View>
           </Flex.Item>
           <Flex.Item span={6}></Flex.Item>
@@ -59,7 +65,7 @@ export default function Me() {
         <View style={{ height: '20px' }} />
 
         <View style={{ textAlign: 'center' }}  className="taroify-ellipsis">
-          username
+          {user?.name}
         </View>
         <View style={{ height: '50px' }} />
 
