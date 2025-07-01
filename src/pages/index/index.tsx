@@ -123,7 +123,7 @@ export default function Index() {
           reload={reload}
         />
       </View>}
-      <NCMiniPlayer />
+      {loadStart && <NCMiniPlayer />}
       <NCPlaylist open={playlistOpen} onClose={togglePlaylist} />
     </PullRefresh>
   );
