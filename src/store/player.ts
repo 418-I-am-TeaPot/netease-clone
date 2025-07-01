@@ -18,8 +18,6 @@ interface PlayerState {
   setIsLike: () => void;
   currentTime: number;
   setCurrentTime: (time: number) => void;
-  canPlay: boolean;
-  setCanPlay: (state: boolean) => void;
 }
 
 export const usePlayerStore = create<PlayerState>((set, get) => {
@@ -38,12 +36,15 @@ export const usePlayerStore = create<PlayerState>((set, get) => {
   // 时间更新：设置 currentTime 全局状态
   player.onTimeUpdate(() => {
     set({ currentTime: player.currentTime });
+    console.log("buffered", player.buffered);
+  });
+  // 用于调试：自动播放
+  player.onCanplay(() => {
+    //player.play();
+    //set({ playing: true });
   });
   player.onEnded(() => {
     playlist.playNextSong();
-  });
-  player.onCanplay(() => {
-    set({ canPlay: true });
   });
 
   return {
@@ -55,6 +56,7 @@ export const usePlayerStore = create<PlayerState>((set, get) => {
       player.src = `http://music.163.com/song/media/outer/url?id=${song.songId}.mp3`; // 设置播放器音频源
       return set({ currentSong: song, currentTime: 0 });
     },
+
     pause: () => {
       player.pause();
       return set({ playing: false });
@@ -67,7 +69,5 @@ export const usePlayerStore = create<PlayerState>((set, get) => {
     setIsLike: () => set((state) => ({ isLike: !state.isLike })),
     currentTime: 0,
     setCurrentTime: (time) => set({ currentTime: time }),
-    canPlay: false,
-    setCanPlay: (state) => set({ canPlay: state }),
   };
 });
