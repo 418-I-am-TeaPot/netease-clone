@@ -8,19 +8,16 @@ import forwardIcon from "@/assets/icons/player/forward.png";
 
 import "./index.scss";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { usePlaylistStore } from "@/store/playlist";
 import { formatSecondsToMMSS } from "@/utils/time";
-import { Song } from "@/models/song";
 export default function PlayerControls() {
-  const { playing, player, currentSong, currentTime, resume, pause, canPlay } =
+  const { playing, player, currentSong, currentTime, resume, pause } =
     usePlayerStore();
   const { playPrevSong, playNextSong } = usePlaylistStore();
 
   const [sliderValue, setSliderValue] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
-  const [buffered, setBuffered] = useState(false);
-  const currentSongRef = useRef<Song | null>(null);
 
   const handleStartClick = () => {
     playing ? pause() : resume();
@@ -51,39 +48,24 @@ export default function PlayerControls() {
 
   useEffect(() => {
     if (!currentSong) return;
-
-    if (currentSong !== currentSongRef.current) {
-      setSliderValue(0);
-      currentSongRef.current = currentSong;
-      console.log("播放状态改变，歌变了：", canPlay);
-      setBuffered(false);
-    } else {
-      console.log("播放状态改变，歌没变：", canPlay);
-      setBuffered(true);
-    }
-  }, [currentSong, canPlay]);
+    setSliderValue(0);
+  }, [currentSong]);
 
   return (
     <View className="playerControls container-v grow">
       {/* 歌曲进度条 */}
       <View className="songProcess container-h grow">
-        <View className="slider-wrapper">
-          <Slider
-            className={`slider ${buffered ? "buffered" : ""}`}
-            style={{
-              transition: "height 0.3s ease",
-              "--slider-inactive-background-color": `rgba(255, 255, 255, 0.3)`,
-              "--slider-active-background-color": "rgba(255, 255, 255, 0.5)",
-            }}
-            max={100}
-            min={0}
-            size={isDragging ? 5 : 3}
-            value={sliderValue}
-            onTouchStart={handleSeekStart}
-            onTouchEnd={handleSeekEnd}
-            onChange={handleSeek}
-          />
-        </View>
+        <Slider
+          className="slider"
+          style={{ transition: "height 0.1s ease" }}
+          max={100}
+          min={0}
+          size={isDragging ? 5 : 3}
+          value={sliderValue}
+          onTouchStart={handleSeekStart}
+          onTouchEnd={handleSeekEnd}
+          onChange={handleSeek}
+        />
         <View className="container-h songTime grow">
           <Text className="progress-text">
             {formatSecondsToMMSS((sliderValue / 100) * (player?.duration || 0))}
