@@ -14,7 +14,6 @@ interface PlayerState {
   pause: () => void;
   resume: () => void;
   player: InnerAudioContext | null;
-  isLike: boolean;
   setIsLike: () => void;
   currentTime: number;
   setCurrentTime: (time: number) => void;
@@ -63,8 +62,12 @@ export const usePlayerStore = create<PlayerState>((set, get) => {
       player.play();
       return set({ playing: true });
     },
-    isLike: false,
-    setIsLike: () => set((state) => ({ isLike: !state.isLike })),
+    
+    setIsLike: () =>{
+      const {setSong,currentSong} = get()
+      if(currentSong)
+        setSong({...currentSong,isLike:!currentSong?.isLike})
+    },
     currentTime: 0,
     setCurrentTime: (time) => set({ currentTime: time }),
     canPlay: false,
