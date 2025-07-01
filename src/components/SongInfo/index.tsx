@@ -4,16 +4,53 @@ import { Like, LikeOutlined } from "@taroify/icons";
 import { usePlayerStore } from "@/store/player";
 
 import "./index.scss";
+import Taro from "@tarojs/taro";
+import { BASE_URL } from "@/service/config";
+import { useUserStore } from "@/store/user";
 
 interface SongInfoProps {
   showLyricsCb: () => void;
 }
 
 export default function SongInfo({ showLyricsCb }: SongInfoProps) {
-  const { currentSong, isLike, setIsLike } = usePlayerStore();
+  const { currentSong, setIsLike } = usePlayerStore();
+  const { user } = useUserStore();
 
   const handleLike = () => {
-    setIsLike();
+    if (currentSong?.isLike) {
+      Taro.request({
+        url: `${BASE_URL}/user/favorites/${currentSong?.songId}`,
+        method: "DELETE",
+        header: {
+          "content-type": "application/json",
+          openid: user?.openid,
+        },
+        success: function (res) {
+          console.log(res.data);
+          setIsLike();
+        },
+        fail: function (error) {
+          console.log(error);
+        },
+      });
+    } else {
+      Taro.request({
+        url: `${BASE_URL}/user/favorites`,
+        method: "POST",
+        data: { sid: currentSong?.songId },
+        header: {
+          "content-type": "application/json",
+          openid: user?.openid,
+        },
+        success: function (res) {
+          console.log(res.data);
+          setIsLike();
+        },
+        fail: function (error) {
+          console.log(error);
+        },
+      });
+    }
   };
 
   return (
@@ -42,7 +79,7 @@ export default function SongInfo({ showLyricsCb }: SongInfoProps) {
             {currentSong?.artists || "unknowed"}
           </Text>
         </View>
-        {isLike ? (
+        {currentSong?.isLike ? (
           <Like color="rgba(255, 0, 0, 0.7)" onClick={handleLike} size={28} />
         ) : (
           <LikeOutlined
