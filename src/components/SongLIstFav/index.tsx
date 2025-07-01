@@ -300,12 +300,12 @@ export default function SongListFav({ reload, user }) {
             onIconClick={(event) => handleItemIconClick(item, index, event)}
           />
         ))}
-        {showLoading && (
+        {showLoading ? (
           <List.Placeholder>
             {loading && <Loading>加载中...</Loading>}
             {!hasMore && "没有更多了"}
           </List.Placeholder>
-        )}
+        ):<></>}
         {/* 为音乐播放器留的空间 */}
         <List.Placeholder
           style="
