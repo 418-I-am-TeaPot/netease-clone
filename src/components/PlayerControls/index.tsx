@@ -1,4 +1,4 @@
-import { Image, Slider } from "@taroify/core";
+import { Image, RollingText, Slider } from "@taroify/core";
 import { Text, View } from "@tarojs/components";
 import { usePlayerStore } from "@/store/player";
 import playIcon from "@/assets/icons/player/play-xl.png";
@@ -12,9 +12,10 @@ import { useEffect, useState } from "react";
 import { usePlaylistStore } from "@/store/playlist";
 import { formatSecondsToMMSS } from "@/utils/time";
 export default function PlayerControls() {
-  const { playing, player, currentSong, currentTime, resume, pause } =
+  const { playing, player, setSong, currentTime, resume, pause } =
     usePlayerStore();
-  const { playPrevSong, playNextSong } = usePlaylistStore();
+  const { currentItemIndex, playlistData, setCurrentItemIndex } =
+    usePlaylistStore();
 
   const [sliderValue, setSliderValue] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -40,16 +41,32 @@ export default function PlayerControls() {
     player?.seek((sliderValue / 100) * player.duration);
   };
 
+  const handlePreSong = () => {
+    if (currentItemIndex == 0) {
+      setSong(playlistData[playlistData.length - 1]);
+      setCurrentItemIndex(playlistData.length - 1);
+    } else {
+      const index = currentItemIndex;
+      setSong(playlistData[index - 1]);
+      setCurrentItemIndex(index - 1);
+    }
+    setSliderValue(0);
+    resume();
+  };
+
+  const handleNextSong = () => {
+    const index = currentItemIndex;
+    setSong(playlistData[(index + 1) % playlistData.length]);
+    setCurrentItemIndex((index + 1) % playlistData.length);
+    setSliderValue(0);
+    resume();
+  };
+
   useEffect(() => {
     // 如果正在拖动进度条，就优先处理用户的时间定位，不使进度条依赖 currentTime 进行变化
     if (!player?.duration || isDragging) return;
     setSliderValue((100 * currentTime) / player.duration);
   }, [currentTime]);
-
-  useEffect(() => {
-    if (!currentSong) return;
-    setSliderValue(0);
-  }, [currentSong]);
 
   return (
     <View className="playerControls container-v grow">
@@ -81,7 +98,7 @@ export default function PlayerControls() {
         <View className="songButtonGroups container-h grow">
           <Image
             className="control-button"
-            onClick={playPrevSong}
+            onClick={handlePreSong}
             height={48}
             width={48}
             src={backIcon}
@@ -106,7 +123,7 @@ export default function PlayerControls() {
           )}
           <Image
             className="control-button"
-            onClick={playNextSong}
+            onClick={handleNextSong}
             height={48}
             width={48}
             src={forwardIcon}
