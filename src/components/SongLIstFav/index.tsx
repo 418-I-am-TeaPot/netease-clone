@@ -134,7 +134,7 @@ export default function SongListFav({ reload, user }) {
     currentItemIndex,
     setCurrentItemIndex,
   } = usePlaylistStore();
-  const { setSong, currentSong, resume, setIsLike, isLike } = usePlayerStore();
+  const { setSong, currentSong, resume, setIsLike } = usePlayerStore();
 
   const handleItemClick = (song: Song) => {
     if (currentSong?.songId == song.songId) {
@@ -200,11 +200,11 @@ export default function SongListFav({ reload, user }) {
       if (playlistData[i].songId == listChange[popupSongIndex].songId) {
         let playlist: Song[] = playlistData;
         playlist[i].isLike = false;
-        setPlaylistData({...playlist});
+        setPlaylistData([...playlist]);
         break;
       }
     }
-    
+
     listChange[popupSongIndex].isLike = !listChange[popupSongIndex].isLike;
     setIsPopupVisible(false);
     requestLike(() => {
@@ -216,17 +216,20 @@ export default function SongListFav({ reload, user }) {
     });
   };
 
-  if (!items || items == undefined || items.length == 0) 
+  if (!items || items == undefined || items.length == 0)
     return (
-      <View style={{
-        width: "100%",
-        paddingTop: 20,
-        fontSize: 20,
-        color: "#444444",
-        textAlign: "center"
-      }}>
+      <View
+        style={{
+          width: "100%",
+          paddingTop: 20,
+          fontSize: 20,
+          color: "#444444",
+          textAlign: "center",
+        }}
+      >
         {"还没有喜欢的歌曲"}
-      </View>);
+      </View>
+    );
 
   return (
     <View
