@@ -29,6 +29,7 @@
   margin-top: 25px;
   font-size: 30px;
   font-weight: bold;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -41,6 +42,9 @@
   text-overflow: ellipsis;
   display: flex;
   flex-direction: row;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .likeIconSCF {
   height: 30px;
