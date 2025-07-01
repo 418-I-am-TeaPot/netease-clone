@@ -9,9 +9,10 @@ import NCMiniPlayer from "@/components/NCMiniPlayer";
 import NCPlaylist from "@/components/NCPlaylist";
 import { usePlaylistStore } from "@/store/playlist";
 import { User } from "@/models/user";
+import { useUserStore } from "@/store/user";
 
 export default function SearchResult() {
-  const user: User = {openid: "1", name: "alan", bio: "我是alan", avatarUrl: "syljbh00m.hd-bkt.clouddn.com/8ae0c571-e5dc-41a2-a534-ba653c54bb75.jpg", registeredAt: 1751163646102, gender: 1};
+  const { user } = useUserStore();
 
   const [searchKey, setSearchKey] = useState<string>("");
 
