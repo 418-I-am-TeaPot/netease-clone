@@ -1,5 +1,6 @@
-import { Image, RollingText, Slider } from "@taroify/core";
+import { Image, Slider } from "@taroify/core";
 import { Text, View } from "@tarojs/components";
+import { ArrowLeft, Play, Pause, ArrowRight } from "@taroify/icons";
 import { usePlayerStore } from "@/store/player";
 import playIcon from "@/assets/icons/player/play-xl.png";
 import pauseIcon from "@/assets/icons/player/pause.png";
@@ -17,28 +18,10 @@ export default function PlayerControls() {
   const { currentItemIndex, playlistData, setCurrentItemIndex } =
     usePlaylistStore();
 
-  const [sliderValue, setSliderValue] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
+  const [sliderValue, setSiderValue] = useState(0);
 
   const handleStartClick = () => {
     playing ? pause() : resume();
-  };
-
-  // 开始拖动进度条
-  const handleSeekStart = () => {
-    setIsDragging(true);
-  };
-
-  // 监听进度条值
-  const handleSeek = (value: number) => {
-    setSliderValue(value);
-    if (!isDragging) player?.seek((value / 100) * player.duration);
-  };
-
-  // 结束拖动进度条
-  const handleSeekEnd = () => {
-    setIsDragging(false);
-    player?.seek((sliderValue / 100) * player.duration);
   };
 
   const handlePreSong = () => {
@@ -50,46 +33,45 @@ export default function PlayerControls() {
       setSong(playlistData[index - 1]);
       setCurrentItemIndex(index - 1);
     }
-    setSliderValue(0);
+    setSiderValue(0);
     resume();
   };
-
   const handleNextSong = () => {
     const index = currentItemIndex;
     setSong(playlistData[(index + 1) % playlistData.length]);
     setCurrentItemIndex((index + 1) % playlistData.length);
-    setSliderValue(0);
+    setSiderValue(0);
     resume();
   };
 
   useEffect(() => {
-    // 如果正在拖动进度条，就优先处理用户的时间定位，不使进度条依赖 currentTime 进行变化
-    if (!player?.duration || isDragging) return;
-    setSliderValue((100 * currentTime) / player.duration);
+    if (!player?.duration) return;
+    setSiderValue((100 * currentTime) / player.duration);
   }, [currentTime]);
 
   return (
     <View className="playerControls container-v grow">
       {/* 歌曲进度条 */}
       <View className="songProcess container-h grow">
-        <Slider
-          className="slider"
-          style={{ transition: "height 0.1s ease" }}
-          max={100}
-          min={0}
-          size={isDragging ? 5 : 3}
-          value={sliderValue}
-          onTouchStart={handleSeekStart}
-          onTouchEnd={handleSeekEnd}
-          onChange={handleSeek}
-        />
-        <View className="container-h songTime grow">
-          <Text className="progress-text">
-            {formatSecondsToMMSS((sliderValue / 100) * (player?.duration || 0))}
-          </Text>
-          <Text className="progress-text">
-            {formatSecondsToMMSS(player?.duration || 0)}
-          </Text>
+        <View style={{ gap: 12 }} className="container-v grow">
+          <Slider
+            max={100}
+            min={0}
+            size={2}
+            value={sliderValue}
+            onChange={(value) => {
+              setSiderValue(value);
+              player?.seek((value / 100) * player.duration);
+            }}
+          />
+          <View className="container-h  songTime">
+            <Text className="progress-text">
+              {formatSecondsToMMSS(currentTime)}
+            </Text>
+            <Text className="progress-text">
+              {formatSecondsToMMSS(player?.duration || 0)}
+            </Text>
+          </View>
         </View>
       </View>
 
