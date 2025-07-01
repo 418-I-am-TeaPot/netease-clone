@@ -7,6 +7,7 @@ import "./index.scss";
 import Taro from "@tarojs/taro";
 import { BASE_URL } from "@/service/config";
 import { useUserStore } from "@/store/user";
+import { usePlaylistStore } from "@/store/playlist";
 
 interface SongInfoProps {
   showLyricsCb: () => void;
@@ -14,9 +15,16 @@ interface SongInfoProps {
 
 export default function SongInfo({ showLyricsCb }: SongInfoProps) {
   const { currentSong, setIsLike } = usePlayerStore();
+  const { currentItemIndex, playlistData, setPlaylistData } =
+    usePlaylistStore();
   const { user } = useUserStore();
 
   const handleLike = () => {
+    // setIsLike();
+    // const newlist = playlistData;
+    // newlist[currentItemIndex].isLike = !newlist[currentItemIndex].isLike;
+    // setPlaylistData(newlist);
+    // return;
     if (currentSong?.isLike) {
       Taro.request({
         url: `${BASE_URL}/user/favorites/${currentSong?.songId}`,
@@ -28,6 +36,9 @@ export default function SongInfo({ showLyricsCb }: SongInfoProps) {
         success: function (res) {
           console.log(res.data);
           setIsLike();
+          const newlist = playlistData;
+          newlist[currentItemIndex].isLike = !newlist[currentItemIndex].isLike;
+          setPlaylistData(newlist);
         },
         fail: function (error) {
           console.log(error);
@@ -45,6 +56,9 @@ export default function SongInfo({ showLyricsCb }: SongInfoProps) {
         success: function (res) {
           console.log(res.data);
           setIsLike();
+          const newlist = playlistData;
+          newlist[currentItemIndex].isLike = !newlist[currentItemIndex].isLike;
+          setPlaylistData(newlist);
         },
         fail: function (error) {
           console.log(error);
