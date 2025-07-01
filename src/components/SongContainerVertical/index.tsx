@@ -1,12 +1,11 @@
 import { View, Text, Image } from "@tarojs/components";
 import "./indexSCV.scss";
-import { Play, Like } from "@taroify/icons";
+import { Play } from "@taroify/icons";
 
 export default function SongContainerVertical({
   imgUrl,
   title,
   artist,
-  isLike,
   onClick,
 }) {
   return (

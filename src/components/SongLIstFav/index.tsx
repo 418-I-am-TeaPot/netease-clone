@@ -195,6 +195,16 @@ export default function SongListFav({ reload, user }) {
 
   const handlePopupLikeClick = () => {
     let listChange: Song[] = list;
+
+    for (let i = 0; i < playlistData.length; i++) {
+      if (playlistData[i].songId == listChange[popupSongIndex].songId) {
+        let playlist: Song[] = playlistData;
+        playlist[i].isLike = false;
+        setPlaylistData({...playlist});
+        break;
+      }
+    }
+    
     listChange[popupSongIndex].isLike = !listChange[popupSongIndex].isLike;
     setIsPopupVisible(false);
     requestLike(() => {
@@ -279,7 +289,6 @@ export default function SongListFav({ reload, user }) {
             imgUrl={item.coverUrl}
             title={item.name}
             artist={item.artists}
-            isLike={item.isLike}
             onClick={() => handleItemClick(item)}
             onIconClick={(event) => handleItemIconClick(item, index, event)}
           />
