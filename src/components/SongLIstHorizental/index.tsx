@@ -9,7 +9,7 @@ import Taro from "@tarojs/taro";
 import { useState, useEffect } from "react";
 import { BASE_URL } from "@/service/config";
 
-export default function SongListHorizental({ user }) {
+export default function SongListHorizental({ user, reload }) {
   const {
     playlistData,
     setPlaylistData,
@@ -36,7 +36,12 @@ export default function SongListHorizental({ user }) {
           openid: user.openid,
         },
         success: (res) => {
-          setItems(res.data.data.slice(0, 10));
+          if(res.data.data.length < 11)
+            setItems(res.data.data);
+          else {
+            let rand = Math.floor(Math.random() * (res.data.data.length - 10));
+            setItems(res.data.data.slice(rand, rand + 10));
+          }
         },
         fail: (err) => {
           Taro.showToast({
@@ -56,7 +61,7 @@ export default function SongListHorizental({ user }) {
 
   useEffect(() => {
     requestWithLoading();
-  }, []);
+  }, [reload]);
 
   const handleItemClick = (song: Song) => {
     if (currentSong?.songId == song.songId) {
@@ -83,14 +88,13 @@ export default function SongListHorizental({ user }) {
 
   if (!items || items == undefined || items.length == 0)
     return (
-      <View
-        style="
-            width: 100%;
-            margin-top: 40px;
-            text-align: center;
-            font-size: 30px;
-            color: #444444;"
-      >
+      <View style={{
+        width: "100%",
+        paddingTop: 20,
+        fontSize: 20,
+        color: "#444444",
+        textAlign: "center"
+      }}>
         {"暂无数据"}
       </View>
     );
