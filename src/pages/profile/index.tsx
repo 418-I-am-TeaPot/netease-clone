@@ -1,11 +1,13 @@
 import { View} from "@tarojs/components";
-import { Flex,Image,Cell,Button,Backdrop,Field,Input,Uploader, Radio} from "@taroify/core";
+import { Flex,Image,Cell,Button,Backdrop,Field,Input,Uploader, Tabs} from "@taroify/core";
 import { useLoad } from "@tarojs/taro";
 import "./index.scss";
 import { useUserStore } from "@/store/user";
 import { useState } from "react";
 import Taro from "@tarojs/taro";
 import CellGroup from "@taroify/core/cell/cell-group";
+import { BASE_URL } from "@/service/config";
+import { User } from "@/models/user";
 
 export default function Profile() {
   const user = useUserStore((state)=>state.user);  
@@ -28,8 +30,12 @@ export default function Profile() {
     console.log("Page loaded.");
   });
 
-
+  var nUser={
+    openid: "1", name: "alan", bio: "我是alan", avatarUrl: "syljbh00m.hd-bkt.clouddn.com/8ae0c571-e5dc-41a2-a534-ba653c54bb75.jpg", registeredAt: 1751163646102, gender: 1
+  }
   const setUser = useUserStore(state => state.setUser)
+
+  
 
 
 
@@ -68,23 +74,50 @@ export default function Profile() {
     })
   }
 
-  const alterInfo  = ()=>{
+  const alterInfo  =async  ()=>{
     setOpen1(false)
-    setnGender(parseInt(gvalue))
+    if(user)
+      nUser=user
+/*     const res = await Taro.uploadFile({
+      url: BASE_URL + '/user',
+      filePath: ,
+      name: "",
+      formData:{
+        name:nName,
+        bio:nBio,
+        gender:nGender
+      },
+      header:{'openid':user?.openid },
+        
+    })
+    console.log("用户信息修改",res) */
+
+
+    
+
         Taro.request({
-                url: '/user',
+                url: BASE_URL+'/user',
                 method: 'PUT',
                 header:{
-                  'openid':user?.openid
+                  'openid':user?.openid,
+                  //'content-type':'application/x-www-form-urlencoded'
                 },
-                data: {
-                  name:nName,
-                  bio:nBio,
-                  gender:nGender
+                
+                data:{
+                  'name':nName,
+                  'bio':nBio,
+                  'gender':nGender
+                }
+                
 
-            },
+            ,
             success:function (res){
                 console.log("用户信息修改成功")
+             
+                nUser.name=nName
+                nUser.bio=nBio
+            nUser.gender=nGender
+                setUser({...user,...nUser})
             },
             fail:  err => {
               console.error('请求失败:', err.errMsg);
@@ -92,16 +125,42 @@ export default function Profile() {
             })
 
   }
-  const alterImg = ()=>{
+  const alterImg = async ()=>{
     setOpen2(false)
-    Taro.request({
-                url: '/user',
-                method: 'PUT',
+    if(user)
+     nUser=user
+    if(file?.url)
+    {
+      const res = await Taro.uploadFile({
+      url: BASE_URL + '/user/avatar',
+      filePath: file.url,
+      name: "image",
+      header:{'openid':user?.openid,
+       },
+       success:(res)=>{
+           console.log("用户头像修改" +typeof  res.data)
+           const obj = JSON.parse(res.data)
+           if(!obj || !user) return
+        //   if(!res.data?.data) return 
+          setUser({...user,avatarUrl:obj?.data ?? ""})
+       }
+      
+    })
+    
+    }
+    else{
+      console.log("图片格式错误")
+    }
+
+/*     Taro.request({
+                url: BASE_URL+'/user/avatar',
+                method: 'POST',
                 header:{
-                  'openid':user?.openid
+                  'openid':user?.openid,
+                  'Content-Type':'multipart/form-data'
                 },
                 data: {
-                  image:file
+                  image:file?.url
             },
             success:function (res){
               console.log("头像修改成功")
@@ -109,7 +168,7 @@ export default function Profile() {
             fail:  err => {
               console.error('请求失败:', err.errMsg);
             }
-            })
+            }) */
 
   }
   return (
@@ -128,7 +187,7 @@ export default function Profile() {
       <View style={{ height: '40px' }} />
 
       <Cell title="昵称" size="large">{user?.name}</Cell>
-      <Cell title="性别" size="large">{gender}</Cell>
+      <Cell title="性别" size="large">{handleGender(user?.gender)}</Cell>
       <Cell title="简介" size="large">{user?.bio}</Cell>
       <Cell title="用户ID" size="large">{user?.openid}</Cell>
       <Button variant="outlined" color="primary" size="large" hairline onClick={openAlterPage}>修改个人信息</Button>
@@ -138,17 +197,17 @@ export default function Profile() {
         <View >
           <Cell.Group inset>
             <Field label="昵称">
-              <Input placeholder="新昵称" value={nName} />
+              <Input placeholder="新昵称" value={nName} onInput={(e)=>setnName(e.detail.value)}/>
             </Field>
             <Field label="简介">
-              <Input placeholder="输入简介" value={nBio} />
+              <Input placeholder="输入简介" value={nBio} onInput={(e)=>setnBio(e.detail.value)}/>
             </Field>
             <Field label="性别展示">
-              <Radio.Group value={gvalue} defaultValue='1' direction="horizontal">
-                <Radio name="1">未知</Radio>
-                <Radio name="2">男</Radio>
-                <Radio name="3">女</Radio>
-              </Radio.Group>
+              <Tabs value={nGender} onChange={setnGender}>
+                <Tabs.TabPane title="未知">未知</Tabs.TabPane>
+                <Tabs.TabPane title="男">男</Tabs.TabPane>
+                <Tabs.TabPane title="女">女</Tabs.TabPane>
+              </Tabs>
             </Field>
           </Cell.Group>
           <Cell.Group inset>

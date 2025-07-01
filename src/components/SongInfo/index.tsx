@@ -13,11 +13,11 @@ interface SongInfoProps {
 }
 
 export default function SongInfo({ showLyricsCb }: SongInfoProps) {
-  const { currentSong, isLike, setIsLike } = usePlayerStore();
+  const { currentSong, setIsLike } = usePlayerStore();
   const { user } = useUserStore();
 
   const handleLike = () => {
-    if (isLike) {
+    if (currentSong?.isLike) {
       Taro.request({
         url: `${BASE_URL}/user/favorites/${currentSong?.songId}`,
         method: "DELETE",
@@ -79,7 +79,7 @@ export default function SongInfo({ showLyricsCb }: SongInfoProps) {
             {currentSong?.artists || "unknowed"}
           </Text>
         </View>
-        {isLike ? (
+        {currentSong?.isLike ? (
           <Like color="rgba(255, 0, 0, 0.7)" onClick={handleLike} size={28} />
         ) : (
           <LikeOutlined
