@@ -16,7 +16,7 @@ export default function SongListHorizental({ user }) {
     currentItemIndex,
     setCurrentItemIndex,
   } = usePlaylistStore();
-  const { setSong, currentSong, playing } = usePlayerStore();
+  const { setSong, currentSong, resume } = usePlayerStore();
 
   const [items, setItems] = useState<Song[]>([]);
 
@@ -78,6 +78,7 @@ export default function SongListHorizental({ user }) {
     }
     setPlaylistData(playlist);
     setSong(song);
+    resume();
   };
 
   if (!items || items == undefined || items.length == 0)
