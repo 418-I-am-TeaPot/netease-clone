@@ -2,7 +2,6 @@ import { Song } from "@/models/song";
 import Taro from "@tarojs/taro";
 import { InnerAudioContext } from "@tarojs/taro";
 import { create } from "zustand";
-import { usePlaylistStore } from "./playlist";
 
 const innerAudioContext = Taro.createInnerAudioContext();
 
@@ -22,7 +21,6 @@ interface PlayerState {
 
 export const usePlayerStore = create<PlayerState>((set, get) => {
   const player = innerAudioContext;
-  const playlist = usePlaylistStore.getState();
 
   player.onPlay(() => {
     console.log("开始播放");
@@ -36,15 +34,11 @@ export const usePlayerStore = create<PlayerState>((set, get) => {
   // 时间更新：设置 currentTime 全局状态
   player.onTimeUpdate(() => {
     set({ currentTime: player.currentTime });
-    console.log("buffered", player.buffered);
   });
   // 用于调试：自动播放
   player.onCanplay(() => {
     //player.play();
     //set({ playing: true });
-  });
-  player.onEnded(() => {
-    playlist.playNextSong();
   });
 
   return {
