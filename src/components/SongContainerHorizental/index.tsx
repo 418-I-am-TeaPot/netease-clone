@@ -4,9 +4,7 @@ import "./indexSCH.scss";
 export default function SongContainerHorizental({ imgUrl, title, onClick }) {
   return (
     <View className="containerSCH" onClick={onClick}>
-      <Image className="coverSCH" src={imgUrl}>
-        {" "}
-      </Image>
+      <Image className="coverSCH" src={imgUrl} />
       <View className="textContainerSCH">
         <Text className="titleSCH">{title}</Text>
       </View>

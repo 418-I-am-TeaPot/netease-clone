@@ -10,9 +10,7 @@ export default function SongContainerVertical({
 }) {
   return (
     <View className="containerSCV" onClick={onClick}>
-      <Image className="coverSCV" src={imgUrl}>
-        {" "}
-      </Image>
+      <Image className="coverSCV" src={imgUrl} />
       <View className="textContainerSCV">
         <Text className="titleSCV">{title}</Text>
         <View className="artistSCV">{artist}</View>

@@ -4,7 +4,6 @@ import SongContainerHorizental from "../SongContainerHorizental";
 import { Song } from "@/models/song";
 import { usePlayerStore } from "@/store/player";
 import { usePlaylistStore } from "@/store/playlist";
-import { Toast } from "@taroify/core";
 import Taro from "@tarojs/taro";
 import { useState, useEffect } from "react";
 import { BASE_URL } from "@/service/config";
@@ -36,8 +35,7 @@ export default function SongListHorizental({ user, reload }) {
           openid: user.openid,
         },
         success: (res) => {
-          if(res.data.data.length < 11)
-            setItems(res.data.data);
+          if (res.data.data.length < 11) setItems(res.data.data);
           else {
             let rand = Math.floor(Math.random() * (res.data.data.length - 10));
             setItems(res.data.data.slice(rand, rand + 10));
@@ -88,13 +86,15 @@ export default function SongListHorizental({ user, reload }) {
 
   if (!items || items == undefined || items.length == 0)
     return (
-      <View style={{
-        width: "100%",
-        paddingTop: 20,
-        fontSize: 20,
-        color: "#444444",
-        textAlign: "center"
-      }}>
+      <View
+        style={{
+          width: "100%",
+          paddingTop: 20,
+          fontSize: 20,
+          color: "#444444",
+          textAlign: "center",
+        }}
+      >
         {"暂无数据"}
       </View>
     );

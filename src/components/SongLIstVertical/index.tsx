@@ -6,23 +6,29 @@ import SongContainerVertical from "../SongContainerVertical";
 import { Song } from "@/models/song";
 import { usePlayerStore } from "@/store/player";
 import { usePlaylistStore } from "@/store/playlist";
-import { Toast } from "@taroify/core";
 import Taro from "@tarojs/taro";
 import { BASE_URL } from "@/service/config";
 
-export default function SongListVertical({ user, search, useSearch = false, reload }) {
+export default function SongListVertical({
+  user,
+  search,
+  useSearch = false,
+  reload,
+}) {
   let url: String;
   let searchkey = search;
 
   if (useSearch && (!searchkey || searchkey == undefined))
     return (
-      <View style={{
-        width: "100%",
-        paddingTop: 20,
-        fontSize: 20,
-        color: "#444444",
-        textAlign: "center"
-      }}>
+      <View
+        style={{
+          width: "100%",
+          paddingTop: 20,
+          fontSize: 20,
+          color: "#444444",
+          textAlign: "center",
+        }}
+      >
         {"没有搜索到歌曲"}
       </View>
     );
@@ -128,14 +134,16 @@ export default function SongListVertical({ user, search, useSearch = false, relo
 
   if (!items || items == undefined || items.length == 0)
     return (
-      <View style={{
-        width: "100%",
-        paddingTop: 20,
-        fontSize: 20,
-        color: "#444444",
-        textAlign: "center"
-      }}>
-        {useSearch?"没有搜索到歌曲":"暂无数据"}
+      <View
+        style={{
+          width: "100%",
+          paddingTop: 20,
+          fontSize: 20,
+          color: "#444444",
+          textAlign: "center",
+        }}
+      >
+        {useSearch ? "没有搜索到歌曲" : "暂无数据"}
       </View>
     );
 
