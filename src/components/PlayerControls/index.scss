@@ -9,12 +9,16 @@
 }
 
 .songProcess {
-  align-items: center;
+  position: relative;
+}
+
+.slider {
+  position: absolute;
 }
 
 .songTime {
   justify-content: space-between;
-  align-items: center;
+  padding-top: 24px;
 }
 
 .progress-text {
