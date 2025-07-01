@@ -12,11 +12,14 @@ import { useState, useRef, useEffect } from "react";
 import { useSearch } from "../search/useSearch";
 import { User } from "@/models/user";
 import { useUserStore } from "@/store/user";
+import { PullRefresh } from "@taroify/core";
+import { usePageScroll } from "@tarojs/taro";
 
 export default function Index() {
   const { user } = useUserStore();
 
   const [ loadStart, setLoadStart] = useState(false);
+
 
   useEffect(() => {
     if(user) {
@@ -61,8 +64,24 @@ export default function Index() {
     }
   }
 
+  const [pullLoading, setPullLoading] = useState(false)
+  const [reachTop, setReachTop] = useState(true)
+  const [reload, setReload] = useState(true)
+  
+  usePageScroll(({ scrollTop }) => setReachTop(scrollTop === 0))
+  
   return (
-    <View className="index">
+    <PullRefresh
+      loading = {pullLoading}
+      reachTop = {reachTop}
+      onRefresh={() => {
+        console.log(reload);
+        setPullLoading(true);
+        setReload(!reload);
+        setTimeout(() => {
+          setPullLoading(false);
+        }, 1000)
+      }}>
       <Search className="searchIndex" placeholder="搜索曲目" 
         onClick={handleSearchClick}
         value={textInput}
@@ -87,6 +106,7 @@ export default function Index() {
       {loadStart && <View>
         <SongListHorizental
           user={user}
+          reload={reload}
         />
       </View>}
 
@@ -100,10 +120,11 @@ export default function Index() {
         <SongListVertical
           user = {user}
           search= {""}
+          reload={reload}
         />
       </View>}
       <NCMiniPlayer />
       <NCPlaylist open={playlistOpen} onClose={togglePlaylist} />
-    </View>
+    </PullRefresh>
   );
 }
