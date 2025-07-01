@@ -29,6 +29,7 @@
   margin-top: 25px;
   font-size: 30px;
   font-weight: bold;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -38,6 +39,8 @@
   height: 50px;
   font-size: 24px;
   color: #888;
+  white-space: nowrap;
+  overflow: hidden;
   text-overflow: ellipsis;
 }
 .likeIconSCV {

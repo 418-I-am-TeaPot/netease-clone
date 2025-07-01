@@ -10,21 +10,20 @@ import { Toast } from "@taroify/core";
 import Taro from "@tarojs/taro";
 import { BASE_URL } from "@/service/config";
 
-export default function SongListVertical({ user, search, useSearch = false }) {
+export default function SongListVertical({ user, search, useSearch = false, reload }) {
   let url: String;
   let searchkey = search;
 
   if (useSearch && (!searchkey || searchkey == undefined))
     return (
-      <View
-        style="
-            width: 100%;
-            margin-top: 40px;
-            text-align: center;
-            font-size: 30px;
-            color: #444444;"
-      >
-        {"暂无数据"}
+      <View style={{
+        width: "100%",
+        paddingTop: 20,
+        fontSize: 20,
+        color: "#444444",
+        textAlign: "center"
+      }}>
+        {"没有搜索到歌曲"}
       </View>
     );
   const [items, setItems] = useState<Song[]>([]);
@@ -75,7 +74,7 @@ export default function SongListVertical({ user, search, useSearch = false }) {
 
   useEffect(() => {
     requestWithLoading(url);
-  }, [search]);
+  }, [search, reload]);
 
   const [hasMore, setHasMore] = useState(true);
   let initItems: Song[];
@@ -129,15 +128,14 @@ export default function SongListVertical({ user, search, useSearch = false }) {
 
   if (!items || items == undefined || items.length == 0)
     return (
-      <View
-        style="
-            width: 100%;
-            margin-top: 40px;
-            text-align: center;
-            font-size: 30px;
-            color: #444444;"
-      >
-        {"暂无数据"}
+      <View style={{
+        width: "100%",
+        paddingTop: 20,
+        fontSize: 20,
+        color: "#444444",
+        textAlign: "center"
+      }}>
+        {useSearch?"没有搜索到歌曲":"暂无数据"}
       </View>
     );
 

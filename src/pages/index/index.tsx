@@ -8,12 +8,24 @@ import NCPlaylist from "@/components/NCPlaylist";
 import { usePlaylistStore } from "@/store/playlist";
 import SongListVertical from "@/components/SongLIstVertical";
 import SongListHorizental from "@/components/SongLIstHorizental";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useSearch } from "../search/useSearch";
 import { User } from "@/models/user";
+import { useUserStore } from "@/store/user";
+import { PullRefresh } from "@taroify/core";
+import { usePageScroll } from "@tarojs/taro";
 
 export default function Index() {
-  const user: User = {openid: "1", name: "alan", bio: "我是alan", avatarUrl: "syljbh00m.hd-bkt.clouddn.com/8ae0c571-e5dc-41a2-a534-ba653c54bb75.jpg", registeredAt: 1751163646102, gender: 1};
+  const { user } = useUserStore();
+
+  const [ loadStart, setLoadStart] = useState(false);
+
+
+  useEffect(() => {
+    if(user) {
+      setLoadStart(true);
+    }
+  },[user]);
 
   useLoad(() => {
     console.log("Page loaded.");
@@ -52,8 +64,24 @@ export default function Index() {
     }
   }
 
+  const [pullLoading, setPullLoading] = useState(false)
+  const [reachTop, setReachTop] = useState(true)
+  const [reload, setReload] = useState(true)
+  
+  usePageScroll(({ scrollTop }) => setReachTop(scrollTop === 0))
+  
   return (
-    <View className="index">
+    <PullRefresh
+      loading = {pullLoading}
+      reachTop = {reachTop}
+      onRefresh={() => {
+        console.log(reload);
+        setPullLoading(true);
+        setReload(!reload);
+        setTimeout(() => {
+          setPullLoading(false);
+        }, 1000)
+      }}>
       <Search className="searchIndex" placeholder="搜索曲目" 
         onClick={handleSearchClick}
         value={textInput}
@@ -75,26 +103,28 @@ export default function Index() {
         {"推荐曲目"}
       </View>
       
-      <View>
+      {loadStart && <View>
         <SongListHorizental
           user={user}
+          reload={reload}
         />
-      </View>
+      </View>}
 
       <View className="liberaryTitle">
         {"全部歌曲"}
       </View>
 
-      <View style="
+      {loadStart && <View style="
         width: 90%;
         margin-left: 5%;">
         <SongListVertical
           user = {user}
           search= {""}
+          reload={reload}
         />
-      </View>
-      <NCMiniPlayer />
+      </View>}
+      {loadStart && <NCMiniPlayer />}
       <NCPlaylist open={playlistOpen} onClose={togglePlaylist} />
-    </View>
+    </PullRefresh>
   );
 }
