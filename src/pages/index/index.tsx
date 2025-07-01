@@ -55,6 +55,7 @@ export default function Index() {
   const { textInput, setTextInput } = useSearch();
 
   const handleSearch = () => {
+    setShowOverlay(false);
     Taro.navigateTo({ url: `/pages/search-result/index?q=${textInput}` });
   };
 

@@ -50,6 +50,7 @@ export default function SearchResult() {
   const handleSearch = () => {
       Taro.setNavigationBarTitle({ title: textInput});
       setSearchKey(textInput);
+      setShowOverlay(false);
     };
 
   const handleCancel = () => {
