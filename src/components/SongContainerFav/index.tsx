@@ -1,12 +1,11 @@
 import { View, Text, Image } from "@tarojs/components";
 import "./indexSCF.scss";
-import { Ellipsis, Like } from "@taroify/icons";
+import { Ellipsis } from "@taroify/icons";
 
 export default function SongContainerFav({
   imgUrl,
   title,
   artist,
-  isLike,
   onClick,
   onIconClick,
 }) {

@@ -175,7 +175,6 @@ export default function SongListVertical({ user, search, useSearch = false, relo
             imgUrl={item.coverUrl}
             title={item.name}
             artist={item.artists}
-            isLike={item.isLike}
             onClick={() => handleItemClick(item)}
           />
         ))}
