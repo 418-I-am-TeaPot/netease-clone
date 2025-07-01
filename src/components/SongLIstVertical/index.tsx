@@ -186,12 +186,12 @@ export default function SongListVertical({
             onClick={() => handleItemClick(item)}
           />
         ))}
-        {showLoading && (
+        {showLoading ? (
           <List.Placeholder>
             {loading && <Loading>加载中...</Loading>}
             {!hasMore && "没有更多了"}
           </List.Placeholder>
-        )}
+        ): <></>}
         {/* 为音乐播放器留的空间 */}
         <List.Placeholder
           style="

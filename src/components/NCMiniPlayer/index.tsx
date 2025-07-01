@@ -23,7 +23,7 @@ export default function NCMiniPlayer() {
 
   return (
     <>
-      {playlistData.length && (
+      {playlistData.length ? (
         <View className="mini-player container-h">
           <View className="container cover-container" onClick={openPlayer}>
             <Image
@@ -60,7 +60,7 @@ export default function NCMiniPlayer() {
             />
           </View>
         </View>
-      )}
+      ): <></>}
     </>
   );
 }
