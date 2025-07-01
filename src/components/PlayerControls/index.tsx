@@ -13,8 +13,16 @@ import { usePlaylistStore } from "@/store/playlist";
 import { formatSecondsToMMSS } from "@/utils/time";
 import { Song } from "@/models/song";
 export default function PlayerControls() {
-  const { playing, player, currentSong, currentTime, resume, pause, canPlay } =
-    usePlayerStore();
+  const {
+    playing,
+    player,
+    currentSong,
+    currentTime,
+    resume,
+    pause,
+    canPlay,
+    setCurrentTime,
+  } = usePlayerStore();
   const { playPrevSong, playNextSong } = usePlaylistStore();
 
   const [sliderValue, setSliderValue] = useState(0);
@@ -46,14 +54,18 @@ export default function PlayerControls() {
   useEffect(() => {
     // 如果正在拖动进度条，就优先处理用户的时间定位，不使进度条依赖 currentTime 进行变化
     if (!player?.duration || isDragging) return;
+    console.log("zheli");
     setSliderValue((100 * currentTime) / player.duration);
+    console.log("currentTime here", currentTime);
   }, [currentTime]);
 
   useEffect(() => {
-    if (!currentSong) return;
+    if (!currentSong || !(currentSong.songId == currentSongRef.current?.songId))
+      return;
 
     if (currentSong !== currentSongRef.current) {
-      setSliderValue(0);
+      console.log("这里");
+      // setSliderValue(0);
       currentSongRef.current = currentSong;
       console.log("播放状态改变，歌变了：", canPlay);
       setBuffered(false);

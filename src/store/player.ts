@@ -51,9 +51,15 @@ export const usePlayerStore = create<PlayerState>((set, get) => {
     playing: false,
     setPlaying: (playing) => set({ playing }),
     setSong: (song) => {
+      const { currentSong } = get();
       if (!song) return;
       player.src = `http://music.163.com/song/media/outer/url?id=${song.songId}.mp3`; // 设置播放器音频源
-      return set({ currentSong: song, currentTime: 0 });
+
+      return set(
+        currentSong?.songId === song.songId
+          ? { currentSong: song }
+          : { currentSong: song, currentTime: 0 }
+      );
     },
     pause: () => {
       player.pause();
