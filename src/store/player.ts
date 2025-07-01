@@ -2,6 +2,7 @@ import { Song } from "@/models/song";
 import Taro from "@tarojs/taro";
 import { InnerAudioContext } from "@tarojs/taro";
 import { create } from "zustand";
+import { usePlaylistStore } from "./playlist";
 
 const innerAudioContext = Taro.createInnerAudioContext();
 
@@ -17,10 +18,13 @@ interface PlayerState {
   setIsLike: () => void;
   currentTime: number;
   setCurrentTime: (time: number) => void;
+  canPlay: boolean;
+  setCanPlay: (state: boolean) => void;
 }
 
 export const usePlayerStore = create<PlayerState>((set, get) => {
   const player = innerAudioContext;
+  const playlist = usePlaylistStore.getState();
 
   player.onPlay(() => {
     console.log("开始播放");
@@ -35,10 +39,11 @@ export const usePlayerStore = create<PlayerState>((set, get) => {
   player.onTimeUpdate(() => {
     set({ currentTime: player.currentTime });
   });
-  // 用于调试：自动播放
+  player.onEnded(() => {
+    playlist.playNextSong();
+  });
   player.onCanplay(() => {
-    //player.play();
-    //set({ playing: true });
+    set({ canPlay: true });
   });
 
   return {
@@ -50,7 +55,6 @@ export const usePlayerStore = create<PlayerState>((set, get) => {
       player.src = `http://music.163.com/song/media/outer/url?id=${song.songId}.mp3`; // 设置播放器音频源
       return set({ currentSong: song, currentTime: 0 });
     },
-
     pause: () => {
       player.pause();
       return set({ playing: false });
@@ -63,5 +67,7 @@ export const usePlayerStore = create<PlayerState>((set, get) => {
     setIsLike: () => set((state) => ({ isLike: !state.isLike })),
     currentTime: 0,
     setCurrentTime: (time) => set({ currentTime: time }),
+    canPlay: false,
+    setCanPlay: (state) => set({ canPlay: state }),
   };
 });
