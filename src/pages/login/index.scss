@@ -1,0 +1,41 @@
+.login {
+  background-color: #f6f6f6;
+  height: 100vh;
+}
+
+.logo-container {
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 120px;
+}
+
+.text-container {
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-text {
+  font-size: xx-large;
+  font-weight: 700;
+  color: #e51419;
+}
+
+.subtitle {
+  color: rgba(0, 0, 0, 0.7);
+  font-size: smaller;
+  font-weight: 300;
+}
+
+.btn-container {
+  padding: 120px;
+}
+
+.btn {
+  background-color: #e51419;
+  color: #f6f6f6;
+  font-weight: 600;
+  font-size: large;
+  border-radius: 50px;
+  padding: 48px 0;
+}

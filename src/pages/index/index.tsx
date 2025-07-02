@@ -55,6 +55,7 @@ export default function Index() {
   const { textInput, setTextInput } = useSearch();
 
   const handleSearch = () => {
+    setShowOverlay(false);
     Taro.navigateTo({ url: `/pages/search-result/index?q=${textInput}` });
   };
 
@@ -93,26 +94,26 @@ export default function Index() {
         onCancel={handleCancel}
       />
 
-      {showOverlay && (
+      {showOverlay ? (
         <View
           className="overlayIndex"
           onClick={handleOverlayClick}
           onTouchMove={handleTouchMove}
           catchMove
         ></View>
-      )}
+      ): <></>}
 
       <View className="recommendTitle">{"推荐曲目"}</View>
 
-      {loadStart && (
+      {loadStart ? (
         <View>
           <SongListHorizental user={user} reload={reload} />
         </View>
-      )}
+      ): <></>}
 
       <View className="liberaryTitle">{"全部歌曲"}</View>
 
-      {loadStart && (
+      {loadStart ? (
         <View
           style="
         width: 90%;
@@ -120,8 +121,8 @@ export default function Index() {
         >
           <SongListVertical user={user} search={""} reload={reload} />
         </View>
-      )}
-      {loadStart && <NCMiniPlayer />}
+      ): <></>}
+      {loadStart ? <NCMiniPlayer />: <></>}
       <NCPlaylist open={playlistOpen} onClose={togglePlaylist} />
     </PullRefresh>
   );

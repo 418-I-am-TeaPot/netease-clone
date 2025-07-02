@@ -50,6 +50,7 @@ export default function SearchResult() {
   const handleSearch = () => {
       Taro.setNavigationBarTitle({ title: textInput});
       setSearchKey(textInput);
+      setShowOverlay(false);
     };
 
   const handleCancel = () => {
@@ -85,7 +86,7 @@ export default function SearchResult() {
         onSearch={handleSearch}
         onCancel={handleCancel}/>
 
-      {showOverlay && (
+      {showOverlay?  (
         <View 
           className='overlaySR' 
           onClick={handleOverlayClick}
@@ -93,7 +94,7 @@ export default function SearchResult() {
           catchMove
         >
         </View>
-      )}
+      ): <></>}
 
       <View className="resultNum">
       </View>
