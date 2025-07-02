@@ -13,16 +13,8 @@ import { usePlaylistStore } from "@/store/playlist";
 import { formatSecondsToMMSS } from "@/utils/time";
 import { Song } from "@/models/song";
 export default function PlayerControls() {
-  const {
-    playing,
-    player,
-    currentSong,
-    currentTime,
-    resume,
-    pause,
-    canPlay,
-    setCurrentTime,
-  } = usePlayerStore();
+  const { playing, player, currentSong, currentTime, resume, pause, canPlay } =
+    usePlayerStore();
   const { playPrevSong, playNextSong } = usePlaylistStore();
 
   const [sliderValue, setSliderValue] = useState(0);
