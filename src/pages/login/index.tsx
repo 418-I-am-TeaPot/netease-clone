@@ -1,12 +1,14 @@
-import { View } from "@tarojs/components";
+import { Text, View } from "@tarojs/components";
 import Taro, { useLoad } from "@tarojs/taro";
-import { Button } from "@taroify/core";
+import { Button, Image } from "@taroify/core";
 import { useUserStore } from "@/store/user";
 import {
   checkUserRegistered,
   getOpenid,
   getUserInfo,
 } from "@/service/userService";
+import "./index.scss";
+import logoIcon from "@/assets/icons/logo.png";
 
 export default function Login() {
   useLoad(() => {
@@ -43,8 +45,25 @@ export default function Login() {
   };
 
   return (
-    <View>
-      <Button onClick={handleLogin}>使用微信账号登录</Button>
+    <View className="login container-v">
+      <View className="container-v grow logo-container">
+        <Image
+          shape="circle"
+          height={280}
+          width={280}
+          mode="aspectFit"
+          src={logoIcon}
+        />
+        <View className="container-v text-container">
+          <Text className="logo-text">网易云音乐</Text>
+          <Text className="subtitle">项目已在 GitHub 上开源</Text>
+        </View>
+      </View>
+      <View className="btn-container container-v">
+        <Button className="btn" onClick={handleLogin}>
+          微信账号一键登录
+        </Button>
+      </View>
     </View>
   );
 }
