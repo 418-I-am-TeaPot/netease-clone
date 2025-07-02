@@ -2,7 +2,6 @@ import { Loading, Popup, Tabs } from "@taroify/core";
 import { Text, View } from "@tarojs/components";
 import "./index.scss";
 import { Cross } from "@taroify/icons";
-import { MOCK_SONGS } from "@/constants/songs";
 import { usePlaylistStore } from "@/store/playlist";
 import { usePlayerStore } from "@/store/player";
 import { useEffect } from "react";

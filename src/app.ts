@@ -3,7 +3,6 @@ import { useLaunch } from "@tarojs/taro";
 
 import "./app.scss";
 import { usePlayerStore } from "./store/player";
-import { MOCK_SONGS } from "./constants/songs";
 import { usePlaylistStore } from "./store/playlist";
 import { useUserStore } from "./store/user";
 import Taro from "@tarojs/taro";

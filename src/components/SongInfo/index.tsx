@@ -20,11 +20,6 @@ export default function SongInfo({ showLyricsCb }: SongInfoProps) {
   const { user } = useUserStore();
 
   const handleLike = () => {
-    // setIsLike();
-    // const newlist = playlistData;
-    // newlist[currentItemIndex].isLike = !newlist[currentItemIndex].isLike;
-    // setPlaylistData(newlist);
-    // return;
     if (currentSong?.isLike) {
       Taro.request({
         url: `${BASE_URL}/user/favorites/${currentSong?.songId}`,

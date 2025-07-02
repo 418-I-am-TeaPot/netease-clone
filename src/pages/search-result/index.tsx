@@ -1,4 +1,4 @@
-import { View, Text } from "@tarojs/components";
+import { View } from "@tarojs/components";
 import Taro, { useLoad } from "@tarojs/taro";
 import { Search } from "@taroify/core";
 import { useSearch } from "../search/useSearch";

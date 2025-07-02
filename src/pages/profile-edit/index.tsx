@@ -2,9 +2,8 @@ import { View } from "@tarojs/components";
 import { useLoad } from "@tarojs/taro";
 import "./index.scss";
 import Taro from "@tarojs/taro";
-import { Button, Cell, Field, Input, Textarea } from "@taroify/core";
+import { Button, Cell, Field, Textarea } from "@taroify/core";
 import { useState } from "react";
-import { User } from "@/models/user";
 import { useUserStore } from "@/store/user";
 import { updateUserInfo, UserInfoUpdate } from "@/service/userService";
 
