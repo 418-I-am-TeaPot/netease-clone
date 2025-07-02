@@ -1,4 +1,4 @@
-import { View } from "@tarojs/components";
+import { Text, View } from "@tarojs/components";
 import Taro, { useDidShow, useLoad } from "@tarojs/taro";
 import "./index.scss";
 import { Flex, Image, Cell, Sticky, PullRefresh } from "@taroify/core";
@@ -61,7 +61,7 @@ export default function Me() {
               shape="circle"
               width={200}
               height={200}
-              src={user?.avatarUrl}
+              src={user?.avatarUrl ?? "https://img.yzcdn.cn/vant/cat.jpeg"}
               onClick={editProfile}
             />
           </View>
@@ -72,7 +72,7 @@ export default function Me() {
       <View style={{ height: "20px" }} />
 
       <View style={{ textAlign: "center" }} className="taroify-ellipsis">
-        {user?.name}
+        <Text style={{ fontWeight: 500 }}>{user?.name}</Text>
       </View>
       <View style={{ height: "50px" }} />
 
