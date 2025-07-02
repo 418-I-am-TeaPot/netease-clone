@@ -27,6 +27,7 @@ function NCPlaylist({ open, onClose }: NCPlaylistProps) {
   }, [currentItemIndex]);
 
   const handleItemSelect = (index: number) => {
+    if (index === currentItemIndex) return;
     setCurrentItemIndex(index);
     setSong(playlistData[index]);
     setTimeout(() => {
