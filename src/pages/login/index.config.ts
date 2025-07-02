@@ -1,3 +1,4 @@
 export default definePageConfig({
-  navigationBarTitleText: "自动登录",
+  navigationBarTitleText: "",
+  navigationBarBackgroundColor: "#f6f6f6",
 });
