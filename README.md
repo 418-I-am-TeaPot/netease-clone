@@ -16,8 +16,6 @@
 
 ![Tabs展示图](assets/images/readme/tabs-preview.jpg)
 
-> 用户信息更改
-
 ### 前端技术栈
 
 - 框架：使用 Taro 结合 React 进行开发
