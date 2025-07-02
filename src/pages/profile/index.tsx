@@ -203,10 +203,10 @@ export default function Profile() {
               <Input placeholder="输入简介" value={nBio} onInput={(e)=>setnBio(e.detail.value)}/>
             </Field>
             <Field label="性别展示">
-              <Tabs value={nGender} onChange={setnGender}>
-                <Tabs.TabPane title="未知">未知</Tabs.TabPane>
-                <Tabs.TabPane title="男">男</Tabs.TabPane>
-                <Tabs.TabPane title="女">女</Tabs.TabPane>
+              <Tabs value={nGender} onChange={setnGender} theme="card">
+                <Tabs.TabPane title="未知"></Tabs.TabPane>
+                <Tabs.TabPane title="男"></Tabs.TabPane>
+                <Tabs.TabPane title="女"></Tabs.TabPane>
               </Tabs>
             </Field>
           </Cell.Group>
