@@ -54,3 +54,68 @@ export const getUserInfo = async ({ openid }: GetUserInfoParams) => {
     console.error(error);
   }
 };
+
+export type UserInfoUpdate = {
+  name: string;
+  bio: string;
+  gender: number;
+};
+
+interface UpdateUserInfoParams {
+  openid: string;
+  userinfo: UserInfoUpdate;
+}
+
+export const updateUserInfo = async ({
+  openid,
+  userinfo,
+}: UpdateUserInfoParams): Promise<boolean | undefined> => {
+  const url = BASE_URL + "/user";
+  console.log("user info package", userinfo);
+  try {
+    const res = await Taro.request({
+      url,
+      method: "PUT",
+      header: { openid },
+      data: userinfo,
+    });
+    if (!res) {
+      console.log("用户信息修改失败：", res);
+      return false;
+    }
+    console.log("修改用户信息成功", res);
+    return true;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+interface UpdateUserAvatarParams {
+  filePath: string;
+  openid: string;
+}
+
+export const updateUserAvatar = async ({
+  filePath,
+  openid,
+}: UpdateUserAvatarParams) => {
+  const url = BASE_URL + "/user/avatar";
+  try {
+    const res = await Taro.uploadFile({
+      url,
+      filePath,
+      name: "image",
+      header: { openid },
+    });
+
+    if (!res) {
+      console.log("更新用户头像失败");
+      return false;
+    }
+
+    console.log("修改用户头像成功", res);
+    return res;
+  } catch (error) {
+    console.error(error);
+  }
+};

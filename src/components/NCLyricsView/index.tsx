@@ -91,7 +91,7 @@ function NCLyricsView({ showLyricsCb }: NCLyricsViewProps) {
   // 活跃歌词行变化时，滚动到该歌词行
   const scrollToLine = (index: number) => {
     const { top, height } = lyricsDimensions[index];
-    const newScrollTop = top + height / 2 - 2;
+    const newScrollTop = top + height / 2;
     setScrollTop(newScrollTop);
   };
 

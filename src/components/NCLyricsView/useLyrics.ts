@@ -54,7 +54,7 @@ export const useLyrics = () => {
         if (!Array.isArray(rects)) return;
         const dims = rects
           .filter((r) => r)
-          .map(({ top, height }) => ({ top: top - 296, height }));
+          .map(({ top, height }) => ({ top: top - 330, height }));
         setLyricsDimensions(dims);
       })
       .exec();
